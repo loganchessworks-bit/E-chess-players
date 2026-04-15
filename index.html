@@ -2,39 +2,281 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Double Round Robin Chess | Proper Pairings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Double Round Robin Chess</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+    }
+    body {
+      background: #1a3c2a;
+      margin: 0;
+      padding: 24px;
+    }
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .main-header {
+      background: #2d2e2c;
+      border-radius: 32px 32px 0 0;
+      padding: 1rem 2rem;
+      text-align: center;
+      border-bottom: 4px solid #d4af37;
+    }
+    .main-header h1 {
+      margin: 0;
+      color: #f7e8c8;
+      font-size: 1.8rem;
+    }
+    .groups {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .group {
+      flex: 1;
+      min-width: 600px;
+      background: #fefcf5;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .group-header {
+      background: #e9dbc0;
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 2px solid #c5a759;
+    }
+    .group-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    .group-header h2 span {
+      background: #2d2e2c;
+      color: #fad974;
+      padding: 2px 10px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      margin-left: 8px;
+    }
+    .player-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .player-controls input {
+      padding: 6px 12px;
+      border-radius: 30px;
+      border: 1px solid #c5a759;
+      font-size: 0.8rem;
+      background: white;
+    }
+    .player-controls button {
+      background: #2d3e2a;
+      border: none;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.75rem;
+    }
+    .player-controls button:hover {
+      background: #4e6b3e;
+    }
+    .remove-last {
+      background: #8b6946;
+    }
+    .players-list {
+      padding: 0.8rem 1.5rem;
+      background: #fefcf5;
+      border-bottom: 1px solid #e9debf;
+    }
+    .players-label {
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: #7a5c3a;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .player-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .player-tag {
+      background: #f3ecd9;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-left: 3px solid #d4af37;
+    }
+    .rounds-container {
+      padding: 1rem 1.5rem 1.5rem;
+    }
+    .rounds-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .round-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #e0d5bb;
+    }
+    .round-title {
+      background: #e9dbc0;
+      padding: 8px 16px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #d4c49a;
+    }
+    .matches-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .matches-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f0e8d8;
+    }
+    .matches-table tr:last-child td {
+      border-bottom: none;
+    }
+    .white-player {
+      font-weight: 600;
+      color: #2d3e2a;
+    }
+    .black-player {
+      font-weight: 600;
+      color: #5a4a32;
+    }
+    .vs {
+      color: #b8aa88;
+      font-size: 0.7rem;
+      margin: 0 4px;
+    }
+    .score-btn {
+      background: #f5f0e2;
+      border: 1px solid #d4c49a;
+      border-radius: 30px;
+      padding: 4px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.85rem;
+      font-family: monospace;
+      transition: 0.05s linear;
+      min-width: 55px;
+    }
+    .score-btn:hover {
+      background: #ffe0aa;
+      transform: scale(1.02);
+    }
+    .standings-table {
+      margin-top: 1.5rem;
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      font-size: 0.8rem;
+    }
+    .standings-table th {
+      background: #d9cbab;
+      padding: 8px 6px;
+      text-align: left;
+    }
+    .standings-table td {
+      padding: 6px 6px;
+      border-bottom: 1px solid #ede3cd;
+    }
+    .footer {
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: flex-end;
+      background: #fefcf5;
+      border-top: 1px solid #e9dfc7;
+      margin-top: 2rem;
+      border-radius: 0 0 32px 32px;
+    }
+    .reset-btn {
+      background: #8b6946;
+      border: none;
+      color: white;
+      padding: 8px 24px;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .reset-btn:hover {
+      background: #a57a4a;
+    }
+  </style>
 </head>
 <body>
+<div class="container">
+  <div class="main-header">
+    <h1>♞ DOUBLE ROUND ROBIN CHESS ♜</h1>
+  </div>
 
-<h2>MEN</h2>
-<div id="menPlayers"></div>
-<input type="text" id="newMenName" placeholder="Player name">
-<button onclick="addMen()">Add</button>
-<button onclick="removeLastMen()">Remove Last</button>
+  <div class="groups">
+    <!-- MEN -->
+    <div class="group">
+      <div class="group-header">
+        <h2>🚹 MEN <span id="menCount">6</span></h2>
+        <div class="player-controls">
+          <input type="text" id="newMenName" placeholder="Player name">
+          <button id="addMenBtn">+ Add</button>
+          <button id="removeMenBtn" class="remove-last">− Remove</button>
+        </div>
+      </div>
+      <div class="players-list">
+        <div class="players-label">Participants</div>
+        <div class="player-tags" id="menPlayersList"></div>
+      </div>
+      <div class="rounds-container">
+        <div id="menRounds"></div>
+        <div id="menStandings"></div>
+      </div>
+    </div>
 
-<h2>WOMEN</h2>
-<div id="womenPlayers"></div>
-<input type="text" id="newWomenName" placeholder="Player name">
-<button onclick="addWomen()">Add</button>
-<button onclick="removeLastWomen()">Remove Last</button>
+    <!-- WOMEN -->
+    <div class="group">
+      <div class="group-header">
+        <h2>🚺 WOMEN <span id="womenCount">6</span></h2>
+        <div class="player-controls">
+          <input type="text" id="newWomenName" placeholder="Player name">
+          <button id="addWomenBtn">+ Add</button>
+          <button id="removeWomenBtn" class="remove-last">− Remove</button>
+        </div>
+      </div>
+      <div class="players-list">
+        <div class="players-label">Participants</div>
+        <div class="player-tags" id="womenPlayersList"></div>
+      </div>
+      <div class="rounds-container">
+        <div id="womenRounds"></div>
+        <div id="womenStandings"></div>
+      </div>
+    </div>
+  </div>
 
-<hr>
-
-<h2>PAIRINGS BY ROUND</h2>
-
-<h3>MEN</h3>
-<div id="menPairings"></div>
-
-<h3>WOMEN</h3>
-<div id="womenPairings"></div>
-
-<hr>
-<button onclick="resetAllScores()">Reset All Scores</button>
+  <div class="footer">
+    <button id="resetAllBtn" class="reset-btn">Reset All Scores</button>
+  </div>
+</div>
 
 <script>
-  // ========== DATA ==========
-  let men = [
+  // ========== INITIAL PLAYERS ==========
+  let menPlayers = [
     "NIRISH KUMAR",
     "RISHIKESH KUMAR",
     "AMIRTHEN",
@@ -43,7 +285,7 @@
     "MUHAMMAD IRSYAD"
   ];
 
-  let women = [
+  let womenPlayers = [
     "LYANNE KONG JING THUNG",
     "MATHIVATHANE",
     "HOVIYEAMATHY",
@@ -52,12 +294,11 @@
     "LINGGESWARY"
   ];
 
-  // scores: white[i][j] = result when i has white vs j
-  // null = not played, 0=loss, 0.5=draw, 1=win
-  let menWhite = [];
-  let womenWhite = [];
+  // Scores: white[i][j] = result when i has white vs j (null, 0, 0.5, 1)
+  let menScores = [];
+  let womenScores = [];
 
-  function initWhiteArray(players) {
+  function initScoreArray(players) {
     let n = players.length;
     let arr = Array(n).fill().map(() => Array(n).fill(null));
     for (let i = 0; i < n; i++) {
@@ -68,31 +309,25 @@
     return arr;
   }
 
-  function reinitScores() {
-    menWhite = initWhiteArray(men);
-    womenWhite = initWhiteArray(women);
+  function reinitAllScores() {
+    menScores = initScoreArray(menPlayers);
+    womenScores = initScoreArray(womenPlayers);
   }
-  reinitScores();
+  reinitAllScores();
 
-  // ========== GET/SET SCORES ==========
-  function getWhite(group, i, j) {
-    if (group === 'men') return menWhite[i]?.[j] ?? null;
-    return womenWhite[i]?.[j] ?? null;
-  }
-
-  function setWhite(group, i, j, val) {
-    if (group === 'men') {
-      if (!menWhite[i]) menWhite[i] = [];
-      menWhite[i][j] = val;
-    } else {
-      if (!womenWhite[i]) womenWhite[i] = [];
-      womenWhite[i][j] = val;
-    }
+  // ========== HELPERS ==========
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
   }
 
-  function getBlack(group, i, j) {
-    let whiteOfJ = getWhite(group, j, i);
-    return whiteOfJ === null ? null : 1 - whiteOfJ;
+  function getWhiteScore(scores, i, j) {
+    return scores[i]?.[j] ?? null;
+  }
+
+  function setWhiteScore(scores, i, j, val) {
+    if (!scores[i]) scores[i] = [];
+    scores[i][j] = val;
   }
 
   function cycleScore(current) {
@@ -102,16 +337,15 @@
     return null;
   }
 
-  // ========== PROPER ROUND ROBIN PAIRING GENERATOR ==========
-  // Returns array of rounds. Each round is array of matches { white, black, whiteIdx, blackIdx }
-  // Standard circle method for round robin.
-  function generateRoundRobinPairings(players) {
+  // ========== PROPER DOUBLE ROUND ROBIN PAIRINGS ==========
+  // Standard circle method for round robin
+  function generateSingleRoundRobin(players) {
     let n = players.length;
     if (n < 2) return [];
     
     let isOdd = n % 2 === 1;
     let virtualPlayers = [...players];
-    if (isOdd) virtualPlayers.push("BYE");
+    if (isOdd) virtualPlayers.push(null); // BYE
     let m = virtualPlayers.length;
     
     let rounds = [];
@@ -125,7 +359,7 @@
         if (whiteIdx !== blackIdx) {
           let whiteName = virtualPlayers[whiteIdx];
           let blackName = virtualPlayers[blackIdx];
-          if (whiteName !== "BYE" && blackName !== "BYE") {
+          if (whiteName !== null && blackName !== null) {
             matches.push({
               white: whiteName,
               black: blackName,
@@ -137,17 +371,22 @@
       }
       rounds.push(matches);
       
-      // rotate: keep first player fixed, rotate rest
+      // rotate: keep first fixed, rotate rest
       let last = virtualPlayers.pop();
       virtualPlayers.splice(1, 0, last);
     }
     return rounds;
   }
 
-  // Double round robin: first cycle (standard), second cycle with colors swapped
-  function generateDoubleRoundRobinPairings(players) {
-    let firstCycle = generateRoundRobinPairings(players);
-    let secondCycle = generateRoundRobinPairings(players);
+  // Double round robin: first cycle, then second cycle with colors swapped
+  // Round 1 and Round (N+1) are same matchups with swapped colors
+  function generateDoubleRoundRobin(players) {
+    if (players.length < 2) return [];
+    
+    let firstCycle = generateSingleRoundRobin(players);
+    if (firstCycle.length === 0) return [];
+    
+    let secondCycle = generateSingleRoundRobin(players);
     
     // swap colors in second cycle
     for (let r = 0; r < secondCycle.length; r++) {
@@ -161,34 +400,32 @@
       }
     }
     
-    // combine: round 1A, round 1B, round 2A, round 2B...
-    let doubleRounds = [];
-    for (let i = 0; i < firstCycle.length; i++) {
-      doubleRounds.push(firstCycle[i]);
-      doubleRounds.push(secondCycle[i]);
-    }
-    return doubleRounds;
+    // Combine: all first cycle rounds first, then all second cycle rounds
+    // This makes Round 1 and Round (N+1) have same matchups with swapped colors
+    return [...firstCycle, ...secondCycle];
   }
 
   // ========== STANDINGS ==========
-  function getStandings(group, players) {
+  function getStandings(players, scores) {
     let stats = [];
     for (let i = 0; i < players.length; i++) {
       let total = 0, wins = 0, draws = 0, losses = 0;
       for (let j = 0; j < players.length; j++) {
         if (i === j) continue;
-        let white = getWhite(group, i, j);
-        let black = getBlack(group, i, j);
+        let white = getWhiteScore(scores, i, j);
+        let black = getWhiteScore(scores, j, i);
+        let blackScore = black === null ? null : 1 - black;
+        
         if (white !== null) {
           total += white;
           if (white === 1) wins++;
           else if (white === 0.5) draws++;
           else losses++;
         }
-        if (black !== null) {
-          total += black;
-          if (black === 1) wins++;
-          else if (black === 0.5) draws++;
+        if (blackScore !== null) {
+          total += blackScore;
+          if (blackScore === 1) wins++;
+          else if (blackScore === 0.5) draws++;
           else losses++;
         }
       }
@@ -202,134 +439,190 @@
   }
 
   // ========== RENDER ==========
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
-  }
-
-  function renderPlayersList(containerId, players, groupLabel) {
+  function renderPlayersList(containerId, players) {
     let container = document.getElementById(containerId);
     if (!container) return;
-    let html = '';
-    for (let i = 0; i < players.length; i++) {
-      html += `<span style="display:inline-block; border:1px solid #999; padding:4px 10px; margin:4px; border-radius:20px;">${escapeHtml(players[i])}</span>`;
-    }
-    container.innerHTML = html;
+    container.innerHTML = players.map(p => `<span class="player-tag">${escapeHtml(p)}</span>`).join('');
   }
 
-  function renderPairings(containerId, group, players) {
+  function renderRounds(containerId, players, scores, groupName) {
     let container = document.getElementById(containerId);
     if (!container) return;
     
     if (players.length < 2) {
-      container.innerHTML = "<i>Need at least 2 players</i>";
+      container.innerHTML = '<div style="padding:20px; text-align:center; color:#7a6848;">Need at least 2 players</div>';
       return;
     }
     
-    let pairings = generateDoubleRoundRobinPairings(players);
+    let rounds = generateDoubleRoundRobin(players);
+    let totalRounds = rounds.length;
     
-    let html = `<p><b>Total rounds: ${pairings.length}</b> (each player plays once per round, colors alternate across two cycles)</p>`;
+    let html = `<div class="rounds-grid">`;
     
-    for (let r = 0; r < pairings.length; r++) {
-      html += `<div style="margin-bottom: 20px; border:1px solid #ccc; padding:10px; background:#f9f9f9;">`;
-      html += `<h4>Round ${r + 1}</h4>`;
-      html += `<table border="1" cellpadding="5" cellspacing="0" style="border-collapse:collapse">`;
-      html += `<tr><th>White</th><th>Black</th><th>Result (White's score)</th></tr>`;
+    for (let r = 0; r < totalRounds; r++) {
+      html += `<div class="round-card">
+        <div class="round-title">Round ${r + 1}</div>
+        <table class="matches-table">`;
       
-      for (let m of pairings[r]) {
-        let whiteScore = getWhite(group, m.whiteIdx, m.blackIdx);
+      for (let m of rounds[r]) {
+        let whiteScore = getWhiteScore(scores, m.whiteIdx, m.blackIdx);
         let display = whiteScore === null ? "○" : (whiteScore === 0 ? "0" : (whiteScore === 0.5 ? "½" : "1"));
+        
         html += `<tr>
-          <td>${escapeHtml(m.white)}</td>
-          <td>${escapeHtml(m.black)}</td>
-          <td><button onclick="cycleWhiteResult('${group}', ${m.whiteIdx}, ${m.blackIdx})">${display}</button></td>
+          <td style="width:40%"><span class="white-player">${escapeHtml(m.white)}</span> <span class="vs">(white)</span></td>
+          <td style="width:15%; text-align:center">vs</td>
+          <td style="width:40%"><span class="black-player">${escapeHtml(m.black)}</span> <span class="vs">(black)</span></td>
+          <td style="width:20%; text-align:center">
+            <button class="score-btn" data-group="${groupName}" data-white="${m.whiteIdx}" data-black="${m.blackIdx}">${display}</button>
+          </td>
         </tr>`;
       }
       html += `</table></div>`;
     }
+    html += `</div>`;
+    container.innerHTML = html;
     
-    // standings
-    let stats = getStandings(group, players);
-    html += `<h4>Standings</h4>`;
-    html += `<table border="1" cellpadding="3" cellspacing="0" style="border-collapse:collapse">`;
-    html += `<tr><th>Rank</th><th>Player</th><th>W</th><th>D</th><th>L</th><th>Total</th></tr>`;
-    for (let s = 0; s < stats.length; s++) {
+    // attach click events
+    container.querySelectorAll('.score-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        let group = btn.dataset.group;
+        let whiteIdx = parseInt(btn.dataset.white);
+        let blackIdx = parseInt(btn.dataset.black);
+        let currentScores = group === 'men' ? menScores : womenScores;
+        let current = getWhiteScore(currentScores, whiteIdx, blackIdx);
+        let next = cycleScore(current);
+        setWhiteScore(currentScores, whiteIdx, blackIdx, next);
+        renderAll();
+      });
+    });
+  }
+
+  function renderStandings(containerId, players, scores) {
+    let container = document.getElementById(containerId);
+    if (!container) return;
+    
+    let stats = getStandings(players, scores);
+    if (players.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+    
+    let html = `<table class="standings-table">
+      <thead><tr><th>#</th><th>Player</th><th>W</th><th>D</th><th>L</th><th>Total</th></tr></thead>
+      <tbody>`;
+    for (let i = 0; i < stats.length; i++) {
       html += `<tr>
-        <td>${s+1}</td>
-        <td>${escapeHtml(stats[s].name)}</td>
-        <td>${stats[s].wins}</td>
-        <td>${stats[s].draws}</td>
-        <td>${stats[s].losses}</td>
-        <td><b>${stats[s].points.toFixed(1)}</b></td>
+        <td>${i+1}</td>
+        <td>${escapeHtml(stats[i].name)}</td>
+        <td>${stats[i].wins}</td>
+        <td>${stats[i].draws}</td>
+        <td>${stats[i].losses}</td>
+        <td><b>${stats[i].points.toFixed(1)}</b></td>
       </tr>`;
     }
-    html += `</table>`;
-    
+    html += `</tbody></table>`;
     container.innerHTML = html;
   }
 
-  window.cycleWhiteResult = function(group, whiteIdx, blackIdx) {
-    let current = getWhite(group, whiteIdx, blackIdx);
-    let next = cycleScore(current);
-    setWhite(group, whiteIdx, blackIdx, next);
-    renderAll();
-  };
-
-  function renderAll() {
-    renderPlayersList("menPlayers", men, "men");
-    renderPlayersList("womenPlayers", women, "women");
-    renderPairings("menPairings", "men", men);
-    renderPairings("womenPairings", "women", women);
+  function updateCounters() {
+    document.getElementById('menCount').innerText = menPlayers.length;
+    document.getElementById('womenCount').innerText = womenPlayers.length;
   }
 
-  // ========== ADD/REMOVE ==========
-  window.addMen = function() {
-    let input = document.getElementById("newMenName");
-    let name = input.value.trim();
-    if (name && !men.some(p => p.toLowerCase() === name.toLowerCase())) {
-      men.push(name);
-      menWhite = initWhiteArray(men);
+  function renderAll() {
+    renderPlayersList('menPlayersList', menPlayers);
+    renderPlayersList('womenPlayersList', womenPlayers);
+    
+    renderRounds('menRounds', menPlayers, menScores, 'men');
+    renderRounds('womenRounds', womenPlayers, womenScores, 'women');
+    
+    renderStandings('menStandings', menPlayers, menScores);
+    renderStandings('womenStandings', womenPlayers, womenScores);
+    
+    updateCounters();
+  }
+
+  // ========== ADD / REMOVE ==========
+  function addPlayer(players, scores, nameInput) {
+    let name = nameInput.value.trim();
+    if (!name) return false;
+    if (players.some(p => p.toLowerCase() === name.toLowerCase())) {
+      alert('Duplicate name');
+      return false;
+    }
+    players.push(name);
+    // rebuild scores
+    let newScores = initScoreArray(players);
+    // copy old scores where possible
+    for (let i = 0; i < scores.length; i++) {
+      for (let j = 0; j < scores.length; j++) {
+        if (scores[i] && scores[i][j] !== undefined && scores[i][j] !== null) {
+          if (i < players.length - 1 && j < players.length - 1) {
+            newScores[i][j] = scores[i][j];
+          }
+        }
+      }
+    }
+    if (scores === menScores) menScores = newScores;
+    else womenScores = newScores;
+    return true;
+  }
+
+  function removeLastPlayer(players, scores) {
+    if (players.length <= 1) return;
+    players.pop();
+    let newScores = initScoreArray(players);
+    for (let i = 0; i < newScores.length; i++) {
+      for (let j = 0; j < newScores.length; j++) {
+        if (scores[i] && scores[i][j] !== undefined && scores[i][j] !== null) {
+          newScores[i][j] = scores[i][j];
+        }
+      }
+    }
+    if (scores === menScores) menScores = newScores;
+    else womenScores = newScores;
+  }
+
+  function resetAllScores() {
+    menScores = initScoreArray(menPlayers);
+    womenScores = initScoreArray(womenPlayers);
+    renderAll();
+  }
+
+  // ========== EVENT LISTENERS ==========
+  document.getElementById('addMenBtn').addEventListener('click', () => {
+    let input = document.getElementById('newMenName');
+    if (addPlayer(menPlayers, menScores, input)) {
+      input.value = '';
       renderAll();
-      input.value = "";
-    } else if (name) alert("Duplicate");
-  };
-  
-  window.addWomen = function() {
-    let input = document.getElementById("newWomenName");
-    let name = input.value.trim();
-    if (name && !women.some(p => p.toLowerCase() === name.toLowerCase())) {
-      women.push(name);
-      womenWhite = initWhiteArray(women);
+    }
+  });
+  document.getElementById('removeMenBtn').addEventListener('click', () => {
+    removeLastPlayer(menPlayers, menScores);
+    renderAll();
+  });
+  document.getElementById('addWomenBtn').addEventListener('click', () => {
+    let input = document.getElementById('newWomenName');
+    if (addPlayer(womenPlayers, womenScores, input)) {
+      input.value = '';
       renderAll();
-      input.value = "";
-    } else if (name) alert("Duplicate");
-  };
-  
-  window.removeLastMen = function() {
-    if (men.length > 0) men.pop();
-    menWhite = initWhiteArray(men);
+    }
+  });
+  document.getElementById('removeWomenBtn').addEventListener('click', () => {
+    removeLastPlayer(womenPlayers, womenScores);
     renderAll();
-  };
-  
-  window.removeLastWomen = function() {
-    if (women.length > 0) women.pop();
-    womenWhite = initWhiteArray(women);
-    renderAll();
-  };
-  
-  window.resetAllScores = function() {
-    menWhite = initWhiteArray(men);
-    womenWhite = initWhiteArray(women);
-    renderAll();
-  };
+  });
+  document.getElementById('resetAllBtn').addEventListener('click', resetAllScores);
+
+  // Enter key support
+  document.getElementById('newMenName').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') document.getElementById('addMenBtn').click();
+  });
+  document.getElementById('newWomenName').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') document.getElementById('addWomenBtn').click();
+  });
 
   renderAll();
 </script>
-
 </body>
 </html>
