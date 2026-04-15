@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Double Round Robin Chess | Manage Players</title>
+  <title>Double Round Robin Chess | 2 Games per Pair</title>
   <style>
     * {
       box-sizing: border-box;
@@ -46,7 +46,7 @@
 
     .group-panel {
       flex: 1;
-      min-width: 580px;
+      min-width: 650px;
       background: #fefcf5;
       border-radius: 32px;
       overflow: hidden;
@@ -201,7 +201,7 @@
 
     .rr-table th, .rr-table td {
       border: 1px solid #dacdac;
-      padding: 6px 2px;
+      padding: 4px 2px;
       text-align: center;
       vertical-align: middle;
     }
@@ -218,22 +218,51 @@
       padding-left: 8px;
     }
 
-    .score-cell {
-      cursor: pointer;
-      font-weight: bold;
-      background-color: #fffcf0;
-      transition: 0.05s;
-      font-family: monospace;
-      font-size: 0.85rem;
+    .game-group {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      align-items: center;
     }
 
-    .score-cell:hover {
-      background-color: #ffe0aa;
+    .game-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.85rem;
+      transition: 0.05s linear;
+      background-color: #f5f0e0;
+      border: 1px solid #c5b58a;
+    }
+
+    .game-circle.white {
+      background-color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .game-circle.black {
+      background-color: #3a3a3a;
+      color: #f0f0f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .game-circle.white:hover {
+      background-color: #ffe8b5;
+      transform: scale(1.05);
+    }
+
+    .game-circle.black:hover {
+      background-color: #5a5a5a;
+      transform: scale(1.05);
     }
 
     .empty-cell {
       background-color: #ece3d0;
-      color: #a09273;
     }
 
     .footer {
@@ -333,26 +362,30 @@
       this.players = [...players];
       this.n = this.players.length;
       // white[i][j] = result when i plays WHITE vs j (0=loss, 0.5=draw, 1=win, null=unplayed)
+      // black[i][j] = result when i plays BLACK vs j (0=loss, 0.5=draw, 1=win, null=unplayed)
       this.white = [];
+      this.black = [];
       this.initScores();
     }
 
     initScores() {
       this.n = this.players.length;
       this.white = Array(this.n).fill().map(() => Array(this.n).fill(null));
+      this.black = Array(this.n).fill().map(() => Array(this.n).fill(null));
       for (let i = 0; i < this.n; i++) {
         for (let j = 0; j < this.n; j++) {
-          if (i !== j) this.white[i][j] = null;
+          if (i !== j) {
+            this.white[i][j] = null;
+            this.black[i][j] = null;
+          }
         }
       }
     }
 
-    // Reset all scores but keep players
     resetScores() {
       this.initScores();
     }
 
-    // Set result when player i has White vs j
     setWhiteResult(i, j, score) {
       if (i === j) return;
       if (score !== 0 && score !== 0.5 && score !== 1 && score !== null) return;
@@ -364,26 +397,17 @@
       return this.white[i][j];
     }
 
-    // Black result for i vs j = 1 - white[j][i]
+    setBlackResult(i, j, score) {
+      if (i === j) return;
+      if (score !== 0 && score !== 0.5 && score !== 1 && score !== null) return;
+      this.black[i][j] = score;
+    }
+
     getBlackResult(i, j) {
       if (i === j) return null;
-      const w = this.white[j][i];
-      return w === null ? null : 1 - w;
+      return this.black[i][j];
     }
 
-    // Get total points for player i against opponent j (both games)
-    getTotalVsOpponent(i, j) {
-      if (i === j) return 0;
-      const white = this.getWhiteResult(i, j);
-      const black = this.getBlackResult(i, j);
-      let total = 0;
-      let played = 0;
-      if (white !== null) { total += white; played++; }
-      if (black !== null) { total += black; played++; }
-      return played === 0 ? null : total;
-    }
-
-    // Compute full statistics
     getStats() {
       const stats = [];
       for (let i = 0; i < this.n; i++) {
@@ -393,6 +417,7 @@
         let losses = 0;
         for (let j = 0; j < this.n; j++) {
           if (i === j) continue;
+          
           const white = this.getWhiteResult(i, j);
           const black = this.getBlackResult(i, j);
           
@@ -424,31 +449,23 @@
       return stats;
     }
 
-    // Add a new player
     addPlayer(name) {
       if (!name.trim()) return false;
       if (this.players.some(p => p.toLowerCase() === name.trim().toLowerCase())) return false;
       this.players.push(name.trim());
-      this.initScores(); // rebuild matrix
+      this.initScores();
       return true;
     }
 
-    // Remove player by index
     removePlayer(idx) {
       if (idx < 0 || idx >= this.players.length) return false;
       this.players.splice(idx, 1);
       this.initScores();
       return true;
     }
-
-    // Update players list (full replace)
-    setPlayers(newPlayers) {
-      this.players = [...newPlayers];
-      this.initScores();
-    }
   }
 
-  // Initial default players (based on your list)
+  // Initial default players
   const defaultMen = [
     "NIRISH KUMAR", "RISHIKESH KUMAR", "AMIRTHEN",
     "DAMIEN STEVE JOHNSON", "AHMAD NAUFAL", "MUHAMMAD IRSYAD"
@@ -461,11 +478,10 @@
   let menGroup = new DoubleRoundRobinGroup(defaultMen);
   let womenGroup = new DoubleRoundRobinGroup(defaultWomen);
 
-  // ---------- RENDER FUNCTIONS ----------
-  function renderPlayersList(group, containerId, groupObj, gender) {
+  function renderPlayersList(group, containerId, gender) {
     const container = document.getElementById(containerId);
     if (!container) return;
-    const players = groupObj.players;
+    const players = group.players;
     container.innerHTML = '';
     players.forEach((name, idx) => {
       const tag = document.createElement('div');
@@ -474,7 +490,6 @@
       container.appendChild(tag);
     });
 
-    // attach remove events
     document.querySelectorAll(`.remove-btn[data-group="${gender}"]`).forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -508,8 +523,7 @@
     });
   }
 
-  // Render double round robin matrix - shows result when ROW player has WHITE vs COLUMN player
-  // Black games are the transposed cells (col vs row) - full double round robin
+  // Render matrix with TWO circles per matchup: White (left) and Black (right)
   function renderMatrix(group, containerId, gender) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -524,28 +538,25 @@
     const table = document.createElement('table');
     table.className = 'rr-table';
 
-    // Header
     const thead = document.createElement('thead');
     const headerRow = thead.insertRow();
     const emptyTh = document.createElement('th');
-    emptyTh.textContent = '▼ White / Black →';
-    emptyTh.style.fontSize = '0.65rem';
+    emptyTh.textContent = 'vs →';
     headerRow.appendChild(emptyTh);
     for (let i = 0; i < n; i++) {
       const th = document.createElement('th');
-      let short = players[i].length > 12 ? players[i].substring(0, 10) + '..' : players[i];
+      let short = players[i].length > 10 ? players[i].substring(0, 8) + '..' : players[i];
       th.textContent = short;
       th.title = players[i];
       headerRow.appendChild(th);
     }
     table.appendChild(thead);
 
-    // Body
     const tbody = document.createElement('tbody');
     for (let i = 0; i < n; i++) {
       const row = tbody.insertRow();
       const nameCell = row.insertCell(0);
-      let short = players[i].length > 12 ? players[i].substring(0, 10) + '..' : players[i];
+      let short = players[i].length > 10 ? players[i].substring(0, 8) + '..' : players[i];
       nameCell.textContent = short;
       nameCell.className = 'player-col';
       nameCell.title = players[i];
@@ -555,25 +566,46 @@
         if (i === j) {
           cell.textContent = '—';
           cell.className = 'empty-cell';
+          cell.style.backgroundColor = '#ece3d0';
         } else {
-          const whiteResult = group.getWhiteResult(i, j);
-          let display = '○';
-          if (whiteResult === 0) display = '0';
-          else if (whiteResult === 0.5) display = '½';
-          else if (whiteResult === 1) display = '1';
-          else display = '○';
+          // Two circles: White game (i has White vs j) and Black game (i has Black vs j)
+          const whiteVal = group.getWhiteResult(i, j);
+          const blackVal = group.getBlackResult(i, j);
           
-          cell.textContent = display;
-          cell.className = 'score-cell';
-          cell.setAttribute('data-i', i);
-          cell.setAttribute('data-j', j);
-          cell.setAttribute('data-gender', gender);
-          cell.style.cursor = 'pointer';
+          const whiteDisplay = (whiteVal === 0 ? '0' : (whiteVal === 0.5 ? '½' : (whiteVal === 1 ? '1' : '○')));
+          const blackDisplay = (blackVal === 0 ? '0' : (blackVal === 0.5 ? '½' : (blackVal === 1 ? '1' : '●')));
           
-          // Click handler for White game result
-          cell.onclick = (function(iIdx, jIdx, gen) {
-            return function() { handleScoreClick(iIdx, jIdx, gen); };
+          const gameGroup = document.createElement('div');
+          gameGroup.className = 'game-group';
+          
+          const whiteCircle = document.createElement('div');
+          whiteCircle.className = 'game-circle white';
+          whiteCircle.textContent = whiteDisplay;
+          whiteCircle.title = `${players[i]} (White) vs ${players[j]}`;
+          
+          const blackCircle = document.createElement('div');
+          blackCircle.className = 'game-circle black';
+          blackCircle.textContent = blackDisplay;
+          blackCircle.title = `${players[i]} (Black) vs ${players[j]}`;
+          
+          whiteCircle.onclick = (function(iIdx, jIdx, gen) {
+            return function(e) {
+              e.stopPropagation();
+              handleWhiteClick(iIdx, jIdx, gen);
+            };
           })(i, j, gender);
+          
+          blackCircle.onclick = (function(iIdx, jIdx, gen) {
+            return function(e) {
+              e.stopPropagation();
+              handleBlackClick(iIdx, jIdx, gen);
+            };
+          })(i, j, gender);
+          
+          gameGroup.appendChild(whiteCircle);
+          gameGroup.appendChild(blackCircle);
+          cell.appendChild(gameGroup);
+          cell.style.padding = '4px 2px';
         }
       }
     }
@@ -582,8 +614,7 @@
     container.appendChild(table);
   }
 
-  // Handle click on white game cell: cycle null -> 0 -> 0.5 -> 1 -> null
-  function handleScoreClick(i, j, gender) {
+  function handleWhiteClick(i, j, gender) {
     const group = gender === 'men' ? menGroup : womenGroup;
     let current = group.getWhiteResult(i, j);
     let newScore;
@@ -591,8 +622,19 @@
     else if (current === 0) newScore = 0.5;
     else if (current === 0.5) newScore = 1;
     else newScore = null;
-    
     group.setWhiteResult(i, j, newScore);
+    renderAll();
+  }
+
+  function handleBlackClick(i, j, gender) {
+    const group = gender === 'men' ? menGroup : womenGroup;
+    let current = group.getBlackResult(i, j);
+    let newScore;
+    if (current === null) newScore = 0;
+    else if (current === 0) newScore = 0.5;
+    else if (current === 0.5) newScore = 1;
+    else newScore = null;
+    group.setBlackResult(i, j, newScore);
     renderAll();
   }
 
@@ -602,13 +644,11 @@
   }
 
   function renderAll() {
-    // Render men
-    renderPlayersList(menGroup, 'menPlayersList', menGroup, 'men');
+    renderPlayersList(menGroup, 'menPlayersList', 'men');
     renderStandings(menGroup, 'menStandingsBody');
     renderMatrix(menGroup, 'menMatrix', 'men');
     
-    // Render women
-    renderPlayersList(womenGroup, 'womenPlayersList', womenGroup, 'women');
+    renderPlayersList(womenGroup, 'womenPlayersList', 'women');
     renderStandings(womenGroup, 'womenStandingsBody');
     renderMatrix(womenGroup, 'womenMatrix', 'women');
     
@@ -624,7 +664,6 @@
     });
   }
 
-  // Add player handlers
   function addMenPlayer() {
     const input = document.getElementById('newMenName');
     const name = input.value.trim();
@@ -657,7 +696,6 @@
     renderAll();
   }
 
-  // Event listeners
   document.getElementById('addMenBtn').addEventListener('click', addMenPlayer);
   document.getElementById('addWomenBtn').addEventListener('click', addWomenPlayer);
   document.getElementById('resetAllBtn').addEventListener('click', resetAllScores);
@@ -669,7 +707,6 @@
     if (e.key === 'Enter') addWomenPlayer();
   });
 
-  // Initial render
   renderAll();
 </script>
 </body>
