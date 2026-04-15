@@ -3,224 +3,232 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Double Round Robin Chess | Men & Women Groups</title>
+  <title>Double Round Robin Chess | Manage Players</title>
   <style>
     * {
       box-sizing: border-box;
-      font-family: 'Segoe UI', 'Roboto', 'Poppins', system-ui, sans-serif;
+      font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
     }
 
     body {
       background: linear-gradient(135deg, #1a3c2a 0%, #0e2a1a 100%);
+      margin: 0;
+      padding: 20px;
       min-height: 100vh;
-      margin: 0;
-      padding: 30px 24px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
-    .tournament {
-      max-width: 1600px;
-      width: 100%;
-      background: #faf7f0;
-      border-radius: 48px;
-      box-shadow: 0 30px 45px rgba(0, 0, 0, 0.4);
-      overflow: hidden;
+    .container {
+      max-width: 1800px;
+      margin: 0 auto;
     }
 
-    .header {
+    .main-header {
       background: #2d2e2c;
-      padding: 1.2rem 2rem;
-      border-bottom: 5px solid #d4af37;
+      border-radius: 40px 40px 0 0;
+      padding: 1rem 2rem;
       text-align: center;
+      border-bottom: 4px solid #d4af37;
     }
 
-    .header h1 {
+    .main-header h1 {
       margin: 0;
-      font-size: 2rem;
-      letter-spacing: 1px;
+      font-size: 1.8rem;
       color: #f7e8c8;
-      text-shadow: 2px 2px 0 #7a531d;
-      font-weight: 800;
+      letter-spacing: 1px;
     }
 
-    .header p {
-      margin: 0.3rem 0 0;
-      color: #cdc6b0;
-      font-weight: 500;
-    }
-
-    .double-badge {
-      display: inline-block;
-      background: #d4af37;
-      color: #2d2e2c;
-      padding: 4px 14px;
-      border-radius: 40px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      margin-top: 8px;
-    }
-
-    .groups-container {
+    .groups-wrapper {
       display: flex;
       flex-wrap: wrap;
       gap: 2rem;
-      padding: 2rem 1.8rem;
+      margin-top: 2rem;
     }
 
-    .group-card {
+    .group-panel {
       flex: 1;
-      min-width: 500px;
-      background: #fffef7;
-      border-radius: 36px;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      border: 1px solid #e9dfc7;
-    }
-
-    .group-title {
-      background: #e9dbc0;
-      padding: 1rem 1.5rem;
-      border-bottom: 3px solid #c5a759;
-    }
-
-    .group-title h2 {
-      margin: 0;
-      font-size: 1.7rem;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .group-title h2 span {
-      background: #2d2e2c;
-      color: #fad974;
-      padding: 4px 12px;
-      border-radius: 50px;
-      font-size: 0.9rem;
-    }
-
-    .players-list {
-      padding: 1rem 1.5rem;
+      min-width: 580px;
       background: #fefcf5;
-      border-bottom: 1px dashed #e2d5b6;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+      border: 1px solid #e0d5bb;
     }
 
-    .players-list h3 {
-      font-size: 1rem;
-      margin: 0 0 10px 0;
-      color: #7a5c3a;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .player-names {
+    .group-header {
+      background: #e9dbc0;
+      padding: 0.8rem 1.5rem;
       display: flex;
+      justify-content: space-between;
+      align-items: center;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 12px;
+      border-bottom: 2px solid #c5a759;
     }
 
-    .player-badge {
-      background: #f3ecd9;
-      padding: 6px 16px;
+    .group-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .group-header h2 span {
+      background: #2d2e2c;
+      color: #fad974;
+      padding: 2px 10px;
       border-radius: 40px;
+      font-size: 0.8rem;
+    }
+
+    .add-form {
+      display: flex;
+      gap: 6px;
+    }
+
+    .add-form input {
+      padding: 6px 12px;
+      border-radius: 30px;
+      border: 1px solid #c5a759;
+      background: white;
+      font-size: 0.8rem;
+      width: 160px;
+    }
+
+    .add-form button {
+      background: #2d3e2a;
+      border: none;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.75rem;
+    }
+
+    .add-form button:hover {
+      background: #4e6b3e;
+    }
+
+    .players-area {
+      padding: 0.8rem 1.5rem;
+      background: #fefcf5;
+      border-bottom: 1px solid #e9debf;
+    }
+
+    .players-label {
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: #7a5c3a;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .player-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .player-tag {
+      background: #f3ecd9;
+      padding: 4px 8px 4px 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
       font-weight: 600;
-      color: #2e3b2c;
-      font-size: 0.9rem;
-      border-left: 4px solid #d4af37;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-left: 3px solid #d4af37;
+    }
+
+    .remove-btn {
+      background: #b87c4f;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .remove-btn:hover {
+      background: #a0342a;
     }
 
     .standings-area {
-      padding: 0 1.5rem 1rem 1.5rem;
+      padding: 0 1.5rem 0.8rem 1.5rem;
     }
 
     .standings-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.85rem;
-      background: #ffffff;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .standings-table th {
-      background: #d9cbab;
-      padding: 8px 6px;
-      text-align: left;
-      font-weight: 700;
-      color: #2b3a26;
-    }
-
-    .standings-table td {
-      padding: 8px 6px;
-      border-bottom: 1px solid #ede3cd;
-    }
-
-    .rank-col {
-      width: 45px;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .score-col {
-      text-align: center;
-      font-weight: 800;
-      background: #f9f2e0;
-    }
-
-    .matrix-section {
-      padding: 0 1.5rem 1.5rem 1.5rem;
-      overflow-x: auto;
-    }
-
-    .matrix-title {
-      font-weight: 600;
-      margin: 8px 0 12px 0;
-      color: #5c4326;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-    }
-
-    .round-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.75rem;
-      min-width: 550px;
+      font-size: 0.8rem;
       background: white;
       border-radius: 16px;
       overflow: hidden;
     }
 
-    .round-table th, .round-table td {
-      border: 1px solid #e2d2b0;
-      padding: 8px 5px;
+    .standings-table th {
+      background: #d9cbab;
+      padding: 6px 5px;
+      text-align: left;
+    }
+
+    .standings-table td {
+      padding: 6px 5px;
+      border-bottom: 1px solid #ede3cd;
+    }
+
+    .matrix-area {
+      padding: 0 1.5rem 1.5rem 1.5rem;
+      overflow-x: auto;
+    }
+
+    .rr-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.7rem;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .rr-table th, .rr-table td {
+      border: 1px solid #dacdac;
+      padding: 6px 2px;
       text-align: center;
       vertical-align: middle;
     }
 
-    .round-table th {
-      background-color: #e8debe;
+    .rr-table th {
+      background: #e2d6b6;
       font-weight: 700;
-      font-size: 0.75rem;
+    }
+
+    .player-col {
+      background: #f3ecd9;
+      font-weight: bold;
+      text-align: left;
+      padding-left: 8px;
     }
 
     .score-cell {
-      font-weight: bold;
       cursor: pointer;
+      font-weight: bold;
       background-color: #fffcf0;
-      transition: 0.08s linear;
+      transition: 0.05s;
       font-family: monospace;
       font-size: 0.85rem;
     }
 
     .score-cell:hover {
-      background-color: #ffe2aa;
+      background-color: #ffe0aa;
     }
 
     .empty-cell {
@@ -228,253 +236,385 @@
       color: #a09273;
     }
 
-    .double-header {
-      font-size: 0.7rem;
-      font-weight: normal;
-      color: #5a4a32;
-    }
-
-    .footer-buttons {
+    .footer {
+      padding: 1rem 2rem;
       display: flex;
       justify-content: flex-end;
-      gap: 16px;
-      padding: 0.8rem 1.8rem 1.8rem 1.8rem;
+      gap: 15px;
+      background: #fefcf5;
+      border-top: 1px solid #e9dfc7;
+      border-radius: 0 0 32px 32px;
     }
 
     button {
       background: #2d3e2a;
       border: none;
       color: white;
-      font-weight: bold;
-      padding: 8px 22px;
-      border-radius: 40px;
+      padding: 6px 20px;
+      border-radius: 30px;
       cursor: pointer;
-      font-size: 0.8rem;
-      transition: all 0.2s;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      font-weight: bold;
     }
 
     button:hover {
       background: #4e6b3e;
-      transform: translateY(-2px);
     }
 
     .reset-btn {
       background: #8b6946;
     }
-
-    @media (max-width: 1050px) {
-      .groups-container {
-        flex-direction: column;
-      }
-      .group-card {
-        min-width: auto;
-      }
-    }
   </style>
 </head>
 <body>
-<div class="tournament">
-  <div class="header">
-    <h1>♜ DOUBLE ROUND ROBIN CHESS ♞</h1>
-    <p>Men's & Women's Groups | Each pair plays TWO games (White & Black)</p>
-    <div class="double-badge">⚫ WHITE GAME (row vs col) &nbsp;&nbsp;|&nbsp;&nbsp; ⚪ BLACK GAME (col vs row)</div>
+<div class="container">
+  <div class="main-header">
+    <h1>♞ DOUBLE ROUND ROBIN CHESS ♜</h1>
   </div>
 
-  <div class="groups-container">
-    <!-- MEN GROUP -->
-    <div class="group-card" id="menGroup">
-      <div class="group-title">
-        <h2>🚹 MEN'S DIVISION <span>6 players</span></h2>
+  <div class="groups-wrapper">
+    <!-- MEN PANEL -->
+    <div class="group-panel" id="menPanel">
+      <div class="group-header">
+        <h2>🚹 MEN <span id="menCount">0</span></h2>
+        <div class="add-form">
+          <input type="text" id="newMenName" placeholder="Player name" maxlength="30">
+          <button id="addMenBtn">+ Add</button>
+        </div>
       </div>
-      <div class="players-list">
-        <h3>📋 Participants</h3>
-        <div class="player-names" id="menPlayersList"></div>
+      <div class="players-area">
+        <div class="players-label">Participants</div>
+        <div class="player-tags" id="menPlayersList"></div>
       </div>
       <div class="standings-area">
-        <h3 style="margin: 6px 0 8px 0;">🏆 Standings & Total Points</h3>
-        <table class="standings-table" id="menStandingsTable">
-          <thead><tr><th>#</th><th>Player</th><th>Wins</th><th>Draws</th><th>Total Score</th></tr></thead>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>Player</th><th>W</th><th>D</th><th>L</th><th>Total</th></tr></thead>
           <tbody id="menStandingsBody"></tbody>
         </table>
       </div>
-      <div class="matrix-section">
-        <div class="matrix-title">🎯 Double Round Robin Matrix</div>
-        <div id="menMatrixContainer"></div>
+      <div class="matrix-area">
+        <div id="menMatrix"></div>
       </div>
     </div>
 
-    <!-- WOMEN GROUP -->
-    <div class="group-card" id="womenGroup">
-      <div class="group-title">
-        <h2>🚺 WOMEN'S DIVISION <span>6 players</span></h2>
+    <!-- WOMEN PANEL -->
+    <div class="group-panel" id="womenPanel">
+      <div class="group-header">
+        <h2>🚺 WOMEN <span id="womenCount">0</span></h2>
+        <div class="add-form">
+          <input type="text" id="newWomenName" placeholder="Player name" maxlength="30">
+          <button id="addWomenBtn">+ Add</button>
+        </div>
       </div>
-      <div class="players-list">
-        <h3>📋 Participants</h3>
-        <div class="player-names" id="womenPlayersList"></div>
+      <div class="players-area">
+        <div class="players-label">Participants</div>
+        <div class="player-tags" id="womenPlayersList"></div>
       </div>
       <div class="standings-area">
-        <h3 style="margin: 6px 0 8px 0;">🏆 Standings & Total Points</h3>
-        <table class="standings-table" id="womenStandingsTable">
-          <thead><tr><th>#</th><th>Player</th><th>Wins</th><th>Draws</th><th>Total Score</th></tr></thead>
+        <table class="standings-table">
+          <thead><tr><th>#</th><th>Player</th><th>W</th><th>D</th><th>L</th><th>Total</th></tr></thead>
           <tbody id="womenStandingsBody"></tbody>
         </table>
       </div>
-      <div class="matrix-section">
-        <div class="matrix-title">🎯 Double Round Robin Matrix</div>
-        <div id="womenMatrixContainer"></div>
+      <div class="matrix-area">
+        <div id="womenMatrix"></div>
       </div>
     </div>
   </div>
-  <div class="footer-buttons">
-    <button id="resetAllBtn" class="reset-btn">⟳ Reset All Scores (Both Groups)</button>
-    <button id="refreshBtn">🔄 Refresh Display</button>
+
+  <div class="footer">
+    <button id="resetAllBtn" class="reset-btn">Reset All Scores</button>
   </div>
 </div>
 
 <script>
-  // ======================== PLAYER LISTS ========================
-  const MEN_NAMES = [
-    "NIRISH KUMAR",
-    "RISHIKESH KUMAR",
-    "AMIRTHEN",
-    "DAMIEN STEVE JOHNSON",
-    "AHMAD NAUFAL",
-    "MUHAMMAD IRSYAD"
-  ];
-
-  const WOMEN_NAMES = [
-    "LYANNE KONG JING THUNG",
-    "MATHIVATHANE",
-    "HOVIYEAMATHY",
-    "TAVAMATHIE",
-    "NURUL SHAFIKAH",
-    "LINGGESWARY"
-  ];
-
-  // ----- Double Round Robin Group -----
-  // Each pair (i,j) plays two games:
-  // - Game A: i plays White vs j (row player has white)
-  // - Game B: j plays White vs i (col player has white)
-  // We store results as:
-  //   whiteResult[i][j] = result for player i when i has White against j (0, 0.5, 1, or null)
-  //   whiteResult[j][i] = result for player j when j has White against i
-  // So matrix shows for cell (i,j): i's result when playing White vs j (top-left to bottom-right orientation)
-  // Total points for player i = sum over all j (whiteResult[i][j] + (1 - whiteResult[j][i])? Wait careful:
-  // When i plays Black against j, that's the complement of whiteResult[j][i].
-  // Actually: against opponent j, player i plays TWO games:
-  //   1) i as White vs j: result = whiteResult[i][j] (if exists)
-  //   2) i as Black vs j: result = 1 - whiteResult[j][i] (since if j as White scored X, i as Black scores 1-X)
-  // So total vs j = whiteResult[i][j] + (1 - whiteResult[j][i])
-  
+  // Double Round Robin Group Class
   class DoubleRoundRobinGroup {
-    constructor(playersList) {
-      this.players = playersList;
+    constructor(players) {
+      this.players = [...players];
       this.n = this.players.length;
-      // whiteResult[i][j] = result when player i has White against player j (i != j)
-      this.whiteResult = [];
+      // white[i][j] = result when i plays WHITE vs j (0=loss, 0.5=draw, 1=win, null=unplayed)
+      this.white = [];
       this.initScores();
     }
 
     initScores() {
-      this.whiteResult = Array(this.n).fill().map(() => Array(this.n).fill(null));
+      this.n = this.players.length;
+      this.white = Array(this.n).fill().map(() => Array(this.n).fill(null));
       for (let i = 0; i < this.n; i++) {
         for (let j = 0; j < this.n; j++) {
-          if (i !== j) {
-            this.whiteResult[i][j] = null; // null = not played yet
-          }
+          if (i !== j) this.white[i][j] = null;
         }
       }
     }
 
-    // Set result for game where player i has White vs player j
-    // score_i_white: 0 (loss), 0.5 (draw), 1 (win)
-    setWhiteResult(i, j, score_i_white) {
-      if (i === j) return;
-      if (score_i_white !== 0 && score_i_white !== 0.5 && score_i_white !== 1 && score_i_white !== null) return;
-      this.whiteResult[i][j] = score_i_white;
+    // Reset all scores but keep players
+    resetScores() {
+      this.initScores();
     }
 
-    // Get result for player i when playing White vs j
+    // Set result when player i has White vs j
+    setWhiteResult(i, j, score) {
+      if (i === j) return;
+      if (score !== 0 && score !== 0.5 && score !== 1 && score !== null) return;
+      this.white[i][j] = score;
+    }
+
     getWhiteResult(i, j) {
       if (i === j) return null;
-      return this.whiteResult[i][j];
+      return this.white[i][j];
     }
 
-    // Get result for player i when playing Black vs j (i has Black, j has White)
-    // This is complement of whiteResult[j][i]
+    // Black result for i vs j = 1 - white[j][i]
     getBlackResult(i, j) {
       if (i === j) return null;
-      const whiteOfJ = this.whiteResult[j][i];
-      if (whiteOfJ === null) return null;
-      return 1 - whiteOfJ;
+      const w = this.white[j][i];
+      return w === null ? null : 1 - w;
     }
 
-    // Get total points for player i against opponent j (both games combined)
+    // Get total points for player i against opponent j (both games)
     getTotalVsOpponent(i, j) {
       if (i === j) return 0;
-      const whiteGame = this.getWhiteResult(i, j);
-      const blackGame = this.getBlackResult(i, j);
-      if (whiteGame === null && blackGame === null) return null;
+      const white = this.getWhiteResult(i, j);
+      const black = this.getBlackResult(i, j);
       let total = 0;
-      let gamesPlayed = 0;
-      if (whiteGame !== null) { total += whiteGame; gamesPlayed++; }
-      if (blackGame !== null) { total += blackGame; gamesPlayed++; }
-      if (gamesPlayed === 0) return null;
-      return total; // can be 0, 0.5, 1, 1.5, 2
+      let played = 0;
+      if (white !== null) { total += white; played++; }
+      if (black !== null) { total += black; played++; }
+      return played === 0 ? null : total;
     }
 
-    // Compute overall stats for each player
-    computeStats() {
+    // Compute full statistics
+    getStats() {
       const stats = [];
       for (let i = 0; i < this.n; i++) {
         let totalPoints = 0;
         let wins = 0;
         let draws = 0;
+        let losses = 0;
         for (let j = 0; j < this.n; j++) {
           if (i === j) continue;
-          const whiteRes = this.getWhiteResult(i, j);
-          const blackRes = this.getBlackResult(i, j);
+          const white = this.getWhiteResult(i, j);
+          const black = this.getBlackResult(i, j);
           
-          if (whiteRes !== null) {
-            totalPoints += whiteRes;
-            if (whiteRes === 1) wins++;
-            if (whiteRes === 0.5) draws++;
+          if (white !== null) {
+            totalPoints += white;
+            if (white === 1) wins++;
+            else if (white === 0.5) draws++;
+            else if (white === 0) losses++;
           }
-          if (blackRes !== null) {
-            totalPoints += blackRes;
-            if (blackRes === 1) wins++;
-            if (blackRes === 0.5) draws++;
+          if (black !== null) {
+            totalPoints += black;
+            if (black === 1) wins++;
+            else if (black === 0.5) draws++;
+            else if (black === 0) losses++;
           }
         }
-        stats.push({ 
-          name: this.players[i], 
-          points: totalPoints, 
-          wins: wins, 
+        stats.push({
+          name: this.players[i],
+          points: totalPoints,
+          wins: wins,
           draws: draws,
-          gamesCount: (this.n-1)*2
+          losses: losses
         });
       }
-      // sort by total points descending, then wins descending
-      stats.sort((a,b) => {
+      stats.sort((a, b) => {
         if (a.points !== b.points) return b.points - a.points;
         return b.wins - a.wins;
       });
       return stats;
     }
 
-    resetAllScores() {
-      this.initScores();
+    // Add a new player
+    addPlayer(name) {
+      if (!name.trim()) return false;
+      if (this.players.some(p => p.toLowerCase() === name.trim().toLowerCase())) return false;
+      this.players.push(name.trim());
+      this.initScores(); // rebuild matrix
+      return true;
     }
 
-    // Check if any result exists for quick rendering helper
+    // Remove player by index
+    removePlayer(idx) {
+      if (idx < 0 || idx >= this.players.length) return false;
+      this.players.splice(idx, 1);
+      this.initScores();
+      return true;
+    }
+
+    // Update players list (full replace)
+    setPlayers(newPlayers) {
+      this.players = [...newPlayers];
+      this.initScores();
+    }
   }
 
-  // instantiate groups
-  const menGroup = new DoubleRoundRobinGroup(MEN_NAMES);
-  const womenGroup = new DoubleRoundRobinGroup(WOMEN_NAMES);
+  // Initial default players (based on your list)
+  const defaultMen = [
+    "NIRISH KUMAR", "RISHIKESH KUMAR", "AMIRTHEN",
+    "DAMIEN STEVE JOHNSON", "AHMAD NAUFAL", "MUHAMMAD IRSYAD"
+  ];
+  const defaultWomen = [
+    "LYANNE KONG JING THUNG", "MATHIVATHANE", "HOVIYEAMATHY",
+    "TAVAMATHIE", "NURUL SHAFIKAH", "LINGGESWARY"
+  ];
+
+  let menGroup = new DoubleRoundRobinGroup(defaultMen);
+  let womenGroup = new DoubleRoundRobinGroup(defaultWomen);
 
   // ---------- RENDER FUNCTIONS ----------
+  function renderPlayersList(group, containerId, groupObj, gender) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const players = groupObj.players;
+    container.innerHTML = '';
+    players.forEach((name, idx) => {
+      const tag = document.createElement('div');
+      tag.className = 'player-tag';
+      tag.innerHTML = `${escapeHtml(name)} <button class="remove-btn" data-group="${gender}" data-idx="${idx}">✕</button>`;
+      container.appendChild(tag);
+    });
+
+    // attach remove events
+    document.querySelectorAll(`.remove-btn[data-group="${gender}"]`).forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.getAttribute('data-idx'));
+        if (gender === 'men') {
+          menGroup.removePlayer(idx);
+          renderAll();
+        } else {
+          womenGroup.removePlayer(idx);
+          renderAll();
+        }
+      });
+    });
+  }
+
+  function renderStandings(group, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    const stats = group.getStats();
+    tbody.innerHTML = '';
+    stats.forEach((stat, idx) => {
+      const row = tbody.insertRow();
+      row.insertCell(0).textContent = (idx + 1).toString();
+      row.insertCell(1).textContent = stat.name;
+      row.insertCell(2).textContent = stat.wins;
+      row.insertCell(3).textContent = stat.draws;
+      row.insertCell(4).textContent = stat.losses;
+      row.insertCell(5).textContent = stat.points.toFixed(1);
+      row.cells[5].style.fontWeight = 'bold';
+      row.cells[5].style.backgroundColor = '#f9f2e0';
+    });
+  }
+
+  // Render double round robin matrix - shows result when ROW player has WHITE vs COLUMN player
+  // Black games are the transposed cells (col vs row) - full double round robin
+  function renderMatrix(group, containerId, gender) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const n = group.players.length;
+    const players = group.players;
+
+    if (n === 0) {
+      container.innerHTML = '<div style="padding: 20px; text-align: center; color: #7a6848;">Add players to see match matrix</div>';
+      return;
+    }
+
+    const table = document.createElement('table');
+    table.className = 'rr-table';
+
+    // Header
+    const thead = document.createElement('thead');
+    const headerRow = thead.insertRow();
+    const emptyTh = document.createElement('th');
+    emptyTh.textContent = '▼ White / Black →';
+    emptyTh.style.fontSize = '0.65rem';
+    headerRow.appendChild(emptyTh);
+    for (let i = 0; i < n; i++) {
+      const th = document.createElement('th');
+      let short = players[i].length > 12 ? players[i].substring(0, 10) + '..' : players[i];
+      th.textContent = short;
+      th.title = players[i];
+      headerRow.appendChild(th);
+    }
+    table.appendChild(thead);
+
+    // Body
+    const tbody = document.createElement('tbody');
+    for (let i = 0; i < n; i++) {
+      const row = tbody.insertRow();
+      const nameCell = row.insertCell(0);
+      let short = players[i].length > 12 ? players[i].substring(0, 10) + '..' : players[i];
+      nameCell.textContent = short;
+      nameCell.className = 'player-col';
+      nameCell.title = players[i];
+
+      for (let j = 0; j < n; j++) {
+        const cell = row.insertCell();
+        if (i === j) {
+          cell.textContent = '—';
+          cell.className = 'empty-cell';
+        } else {
+          const whiteResult = group.getWhiteResult(i, j);
+          let display = '○';
+          if (whiteResult === 0) display = '0';
+          else if (whiteResult === 0.5) display = '½';
+          else if (whiteResult === 1) display = '1';
+          else display = '○';
+          
+          cell.textContent = display;
+          cell.className = 'score-cell';
+          cell.setAttribute('data-i', i);
+          cell.setAttribute('data-j', j);
+          cell.setAttribute('data-gender', gender);
+          cell.style.cursor = 'pointer';
+          
+          // Click handler for White game result
+          cell.onclick = (function(iIdx, jIdx, gen) {
+            return function() { handleScoreClick(iIdx, jIdx, gen); };
+          })(i, j, gender);
+        }
+      }
+    }
+    table.appendChild(tbody);
+    container.innerHTML = '';
+    container.appendChild(table);
+  }
+
+  // Handle click on white game cell: cycle null -> 0 -> 0.5 -> 1 -> null
+  function handleScoreClick(i, j, gender) {
+    const group = gender === 'men' ? menGroup : womenGroup;
+    let current = group.getWhiteResult(i, j);
+    let newScore;
+    if (current === null) newScore = 0;
+    else if (current === 0) newScore = 0.5;
+    else if (current === 0.5) newScore = 1;
+    else newScore = null;
+    
+    group.setWhiteResult(i, j, newScore);
+    renderAll();
+  }
+
+  function updateGroupCounters() {
+    document.getElementById('menCount').textContent = menGroup.players.length;
+    document.getElementById('womenCount').textContent = womenGroup.players.length;
+  }
+
+  function renderAll() {
+    // Render men
+    renderPlayersList(menGroup, 'menPlayersList', menGroup, 'men');
+    renderStandings(menGroup, 'menStandingsBody');
+    renderMatrix(menGroup, 'menMatrix', 'men');
+    
+    // Render women
+    renderPlayersList(womenGroup, 'womenPlayersList', womenGroup, 'women');
+    renderStandings(womenGroup, 'womenStandingsBody');
+    renderMatrix(womenGroup, 'womenMatrix', 'women');
+    
+    updateGroupCounters();
+  }
+
   function escapeHtml(str) {
     return str.replace(/[&<>]/g, function(m) {
       if (m === '&') return '&amp;';
@@ -484,178 +624,53 @@
     });
   }
 
-  function renderPlayersList() {
-    const menContainer = document.getElementById("menPlayersList");
-    menContainer.innerHTML = MEN_NAMES.map(name => `<div class="player-badge">${escapeHtml(name)}</div>`).join('');
-    const womenContainer = document.getElementById("womenPlayersList");
-    womenContainer.innerHTML = WOMEN_NAMES.map(name => `<div class="player-badge">${escapeHtml(name)}</div>`).join('');
-  }
-
-  function renderStandings(group, tableBodyId) {
-    const stats = group.computeStats();
-    const tbody = document.getElementById(tableBodyId);
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    stats.forEach((stat, idx) => {
-      const row = tbody.insertRow();
-      const rankCell = row.insertCell(0);
-      rankCell.textContent = (idx+1).toString();
-      rankCell.className = "rank-col";
-      const nameCell = row.insertCell(1);
-      nameCell.textContent = stat.name;
-      const winsCell = row.insertCell(2);
-      winsCell.textContent = stat.wins;
-      winsCell.style.textAlign = "center";
-      const drawsCell = row.insertCell(3);
-      drawsCell.textContent = stat.draws;
-      drawsCell.style.textAlign = "center";
-      const ptsCell = row.insertCell(4);
-      ptsCell.textContent = stat.points.toFixed(1);
-      ptsCell.className = "score-col";
-    });
-  }
-
-  // Render double round robin matrix: each cell shows result when row player has WHITE vs column player
-  // And also visually we indicate if black game result exists via small indicator? Actually double round robin:
-  // Cell (i,j) shows White result for i vs j. The Black game (i as Black vs j) is shown in cell (j,i) as White result for j vs i.
-  // So the matrix is fully asymmetric. This is standard double round robin display.
-  function renderMatrix(group, containerId, groupType) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const n = group.n;
-    const players = group.players;
-    
-    const table = document.createElement('table');
-    table.className = 'round-table';
-    
-    // header row
-    const thead = document.createElement('thead');
-    let headerRow = thead.insertRow();
-    const emptyTh = document.createElement('th');
-    emptyTh.textContent = 'White →';
-    emptyTh.style.fontSize = '0.7rem';
-    headerRow.appendChild(emptyTh);
-    for (let i = 0; i < n; i++) {
-      const th = document.createElement('th');
-      let shortName = players[i].split(' ').slice(0,2).join(' ');
-      if (shortName.length > 16) shortName = players[i].substring(0,12)+'..';
-      th.textContent = shortName;
-      th.title = players[i];
-      headerRow.appendChild(th);
-    }
-    // add extra header note
-    const caption = document.createElement('caption');
-    caption.style.captionSide = 'bottom';
-    caption.style.fontSize = '0.7rem';
-    caption.style.marginTop = '8px';
-    caption.style.color = '#7a6848';
-    caption.innerHTML = '⚪ Each cell shows RESULT when ROW player has WHITE vs COLUMN player. Black games are in transposed cells.';
-    table.appendChild(caption);
-    table.appendChild(thead);
-    
-    const tbody = document.createElement('tbody');
-    for (let i = 0; i < n; i++) {
-      const row = tbody.insertRow();
-      const nameCell = row.insertCell(0);
-      let shortName = players[i].split(' ').slice(0,2).join(' ');
-      if (shortName.length > 16) shortName = players[i].substring(0,12)+'..';
-      nameCell.textContent = shortName;
-      nameCell.style.fontWeight = 'bold';
-      nameCell.style.backgroundColor = '#f7efdb';
-      nameCell.style.whiteSpace = 'nowrap';
-      
-      for (let j = 0; j < n; j++) {
-        const cell = row.insertCell();
-        if (i === j) {
-          cell.textContent = '—';
-          cell.className = 'empty-cell';
-          cell.style.backgroundColor = '#ece3d0';
-        } else {
-          const whiteResult = group.getWhiteResult(i, j);
-          let displayText = '⚪';
-          if (whiteResult === 0) displayText = '0';
-          else if (whiteResult === 0.5) displayText = '½';
-          else if (whiteResult === 1) displayText = '1';
-          else displayText = '⚪';
-          
-          cell.textContent = displayText;
-          cell.className = 'score-cell';
-          cell.setAttribute('data-i', i);
-          cell.setAttribute('data-j', j);
-          cell.setAttribute('data-group', groupType);
-          // click handler for WHITE game result (row has white)
-          cell.onclick = (function(iIdx, jIdx, grpType) {
-            return function() { handleWhiteGameClick(iIdx, jIdx, grpType); };
-          })(i, j, groupType);
-          cell.style.cursor = 'pointer';
-          cell.style.fontWeight = 'bold';
-          cell.title = `White game: ${players[i]} (White) vs ${players[j]} (Black) — Click to cycle: 0 (Loss), ½ (Draw), 1 (Win), ⚪ (Clear)`;
-        }
+  // Add player handlers
+  function addMenPlayer() {
+    const input = document.getElementById('newMenName');
+    const name = input.value.trim();
+    if (name) {
+      if (menGroup.addPlayer(name)) {
+        input.value = '';
+        renderAll();
+      } else {
+        alert('Duplicate or invalid name');
       }
     }
-    table.appendChild(tbody);
-    container.innerHTML = '';
-    container.appendChild(table);
   }
 
-  // Handle click on White game result (row player has White vs column player)
-  function handleWhiteGameClick(i, j, groupType) {
-    let group;
-    if (groupType === 'men') group = menGroup;
-    else group = womenGroup;
-    
-    let current = group.getWhiteResult(i, j);
-    let newScore;
-    // cycle: null -> 0 -> 0.5 -> 1 -> null
-    if (current === null) newScore = 0;
-    else if (current === 0) newScore = 0.5;
-    else if (current === 0.5) newScore = 1;
-    else newScore = null;
-    
-    group.setWhiteResult(i, j, newScore);
-    
-    // re-render both standings + matrix for that group
-    if (groupType === 'men') {
-      renderStandings(menGroup, 'menStandingsBody');
-      renderMatrix(menGroup, 'menMatrixContainer', 'men');
-    } else {
-      renderStandings(womenGroup, 'womenStandingsBody');
-      renderMatrix(womenGroup, 'womenMatrixContainer', 'women');
+  function addWomenPlayer() {
+    const input = document.getElementById('newWomenName');
+    const name = input.value.trim();
+    if (name) {
+      if (womenGroup.addPlayer(name)) {
+        input.value = '';
+        renderAll();
+      } else {
+        alert('Duplicate or invalid name');
+      }
     }
-  }
-
-  function renderAll() {
-    renderPlayersList();
-    renderStandings(menGroup, 'menStandingsBody');
-    renderStandings(womenGroup, 'womenStandingsBody');
-    renderMatrix(menGroup, 'menMatrixContainer', 'men');
-    renderMatrix(womenGroup, 'womenMatrixContainer', 'women');
   }
 
   function resetAllScores() {
-    menGroup.resetAllScores();
-    womenGroup.resetAllScores();
+    menGroup.resetScores();
+    womenGroup.resetScores();
     renderAll();
   }
 
-  // attach event listeners
-  document.addEventListener('DOMContentLoaded', () => {
-    renderAll();
-    
-    const resetBtn = document.getElementById('resetAllBtn');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
-        resetAllScores();
-      });
-    }
-    
-    const refreshBtn = document.getElementById('refreshBtn');
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', () => {
-        renderAll();
-      });
-    }
+  // Event listeners
+  document.getElementById('addMenBtn').addEventListener('click', addMenPlayer);
+  document.getElementById('addWomenBtn').addEventListener('click', addWomenPlayer);
+  document.getElementById('resetAllBtn').addEventListener('click', resetAllScores);
+  
+  document.getElementById('newMenName').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') addMenPlayer();
   });
+  document.getElementById('newWomenName').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') addWomenPlayer();
+  });
+
+  // Initial render
+  renderAll();
 </script>
 </body>
 </html>
