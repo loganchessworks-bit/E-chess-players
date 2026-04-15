@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Double Round Robin Chess</title>
+  <title>Double Round Robin Chess | Proper Pairings</title>
 </head>
 <body>
 
 <h2>MEN</h2>
 <div id="menPlayers"></div>
-<button onclick="addMen()">+ Add Men</button>
 <input type="text" id="newMenName" placeholder="Player name">
-<br><br>
+<button onclick="addMen()">Add</button>
+<button onclick="removeLastMen()">Remove Last</button>
 
 <h2>WOMEN</h2>
 <div id="womenPlayers"></div>
-<button onclick="addWomen()">+ Add Women</button>
 <input type="text" id="newWomenName" placeholder="Player name">
-<br><br>
+<button onclick="addWomen()">Add</button>
+<button onclick="removeLastWomen()">Remove Last</button>
 
 <hr>
 
-<h2>PAIRINGS & SCORES</h2>
+<h2>PAIRINGS BY ROUND</h2>
 
 <h3>MEN</h3>
 <div id="menPairings"></div>
@@ -52,81 +52,49 @@
     "LINGGESWARY"
   ];
 
-  // scores: { "groupName": { "i,j": { white: score, black: score } } }
-  // score: 0=loss, 0.5=draw, 1=win, null=not played
-  let scores = {
-    men: {},
-    women: {}
-  };
+  // scores: white[i][j] = result when i has white vs j
+  // null = not played, 0=loss, 0.5=draw, 1=win
+  let menWhite = [];
+  let womenWhite = [];
 
-  function initScoresForGroup(group, players) {
-    let groupScores = {};
-    for (let i = 0; i < players.length; i++) {
-      for (let j = i + 1; j < players.length; j++) {
-        let key = i + "," + j;
-        groupScores[key] = { white: null, black: null };
+  function initWhiteArray(players) {
+    let n = players.length;
+    let arr = Array(n).fill().map(() => Array(n).fill(null));
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        if (i !== j) arr[i][j] = null;
       }
     }
-    scores[group] = groupScores;
+    return arr;
   }
 
-  function reinitAllScores() {
-    initScoresForGroup("men", men);
-    initScoresForGroup("women", women);
+  function reinitScores() {
+    menWhite = initWhiteArray(men);
+    womenWhite = initWhiteArray(women);
+  }
+  reinitScores();
+
+  // ========== GET/SET SCORES ==========
+  function getWhite(group, i, j) {
+    if (group === 'men') return menWhite[i]?.[j] ?? null;
+    return womenWhite[i]?.[j] ?? null;
   }
 
-  // initial
-  reinitAllScores();
-
-  // ========== HELPERS ==========
-  function escapeHtml(str) {
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
+  function setWhite(group, i, j, val) {
+    if (group === 'men') {
+      if (!menWhite[i]) menWhite[i] = [];
+      menWhite[i][j] = val;
+    } else {
+      if (!womenWhite[i]) womenWhite[i] = [];
+      womenWhite[i][j] = val;
+    }
   }
 
-  // get white score for i vs j (i plays white vs j)
-  function getWhiteScore(group, i, j) {
-    if (i === j) return null;
-    let a = Math.min(i, j);
-    let b = Math.max(i, j);
-    let key = a + "," + b;
-    let pair = scores[group][key];
-    if (!pair) return null;
-    if (i < j) return pair.white;
-    else return pair.black;
-  }
-
-  // set white score for i vs j (i plays white vs j)
-  function setWhiteScore(group, i, j, value) {
-    if (i === j) return;
-    let a = Math.min(i, j);
-    let b = Math.max(i, j);
-    let key = a + "," + b;
-    if (!scores[group][key]) scores[group][key] = { white: null, black: null };
-    if (i < j) scores[group][key].white = value;
-    else scores[group][key].black = value;
-  }
-
-  // get black score for i vs j (i plays black vs j) = 1 - white score of j vs i
-  function getBlackScore(group, i, j) {
-    if (i === j) return null;
-    let whiteOfJ = getWhiteScore(group, j, i);
+  function getBlack(group, i, j) {
+    let whiteOfJ = getWhite(group, j, i);
     return whiteOfJ === null ? null : 1 - whiteOfJ;
   }
 
-  // set black score directly (for cycling)
-  function setBlackScore(group, i, j, value) {
-    if (i === j) return;
-    // black score for i vs j = white score for j vs i should be 1 - value
-    let newWhiteForJ = value === null ? null : 1 - value;
-    setWhiteScore(group, j, i, newWhiteForJ);
-  }
-
-  // cycle score: null -> 0 -> 0.5 -> 1 -> null
   function cycleScore(current) {
     if (current === null) return 0;
     if (current === 0) return 0.5;
@@ -134,18 +102,83 @@
     return null;
   }
 
+  // ========== PROPER ROUND ROBIN PAIRING GENERATOR ==========
+  // Returns array of rounds. Each round is array of matches { white, black, whiteIdx, blackIdx }
+  // Standard circle method for round robin.
+  function generateRoundRobinPairings(players) {
+    let n = players.length;
+    if (n < 2) return [];
+    
+    let isOdd = n % 2 === 1;
+    let virtualPlayers = [...players];
+    if (isOdd) virtualPlayers.push("BYE");
+    let m = virtualPlayers.length;
+    
+    let rounds = [];
+    let totalRounds = m - 1;
+    
+    for (let round = 0; round < totalRounds; round++) {
+      let matches = [];
+      for (let i = 0; i < m / 2; i++) {
+        let whiteIdx = i;
+        let blackIdx = m - 1 - i;
+        if (whiteIdx !== blackIdx) {
+          let whiteName = virtualPlayers[whiteIdx];
+          let blackName = virtualPlayers[blackIdx];
+          if (whiteName !== "BYE" && blackName !== "BYE") {
+            matches.push({
+              white: whiteName,
+              black: blackName,
+              whiteIdx: players.indexOf(whiteName),
+              blackIdx: players.indexOf(blackName)
+            });
+          }
+        }
+      }
+      rounds.push(matches);
+      
+      // rotate: keep first player fixed, rotate rest
+      let last = virtualPlayers.pop();
+      virtualPlayers.splice(1, 0, last);
+    }
+    return rounds;
+  }
+
+  // Double round robin: first cycle (standard), second cycle with colors swapped
+  function generateDoubleRoundRobinPairings(players) {
+    let firstCycle = generateRoundRobinPairings(players);
+    let secondCycle = generateRoundRobinPairings(players);
+    
+    // swap colors in second cycle
+    for (let r = 0; r < secondCycle.length; r++) {
+      for (let m of secondCycle[r]) {
+        let temp = m.white;
+        m.white = m.black;
+        m.black = temp;
+        let tempIdx = m.whiteIdx;
+        m.whiteIdx = m.blackIdx;
+        m.blackIdx = tempIdx;
+      }
+    }
+    
+    // combine: round 1A, round 1B, round 2A, round 2B...
+    let doubleRounds = [];
+    for (let i = 0; i < firstCycle.length; i++) {
+      doubleRounds.push(firstCycle[i]);
+      doubleRounds.push(secondCycle[i]);
+    }
+    return doubleRounds;
+  }
+
   // ========== STANDINGS ==========
   function getStandings(group, players) {
     let stats = [];
     for (let i = 0; i < players.length; i++) {
-      let total = 0;
-      let wins = 0;
-      let draws = 0;
-      let losses = 0;
+      let total = 0, wins = 0, draws = 0, losses = 0;
       for (let j = 0; j < players.length; j++) {
         if (i === j) continue;
-        let white = getWhiteScore(group, i, j);
-        let black = getBlackScore(group, i, j);
+        let white = getWhite(group, i, j);
+        let black = getBlack(group, i, j);
         if (white !== null) {
           total += white;
           if (white === 1) wins++;
@@ -159,7 +192,7 @@
           else losses++;
         }
       }
-      stats.push({ name: players[i], points: total, wins: wins, draws: draws, losses: losses });
+      stats.push({ name: players[i], points: total, wins, draws, losses });
     }
     stats.sort((a, b) => {
       if (a.points !== b.points) return b.points - a.points;
@@ -168,123 +201,133 @@
     return stats;
   }
 
-  // ========== RENDER PLAYERS LIST ==========
-  function renderPlayersList(containerId, players, groupName, addCallback) {
+  // ========== RENDER ==========
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function renderPlayersList(containerId, players, groupLabel) {
     let container = document.getElementById(containerId);
     if (!container) return;
-    let html = "";
+    let html = '';
     for (let i = 0; i < players.length; i++) {
-      html += `<span style="display:inline-block; border:1px solid #ccc; padding:4px 8px; margin:4px; border-radius:20px;">${escapeHtml(players[i])} <button onclick="removePlayer('${groupName}', ${i})">x</button></span>`;
+      html += `<span style="display:inline-block; border:1px solid #999; padding:4px 10px; margin:4px; border-radius:20px;">${escapeHtml(players[i])}</span>`;
     }
     container.innerHTML = html;
   }
 
-  // ========== RENDER PAIRINGS (all matches with two games) ==========
-  function renderPairings(containerId, groupName, players) {
+  function renderPairings(containerId, group, players) {
     let container = document.getElementById(containerId);
     if (!container) return;
+    
     if (players.length < 2) {
       container.innerHTML = "<i>Need at least 2 players</i>";
       return;
     }
-
-    let html = "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse:collapse'>";
-    html += "<tr><th>#</th><th>White Player</th><th>Black Player</th><th>Result (White)</th><th>Result (Black)</th></tr>";
     
-    let matchId = 0;
-    for (let i = 0; i < players.length; i++) {
-      for (let j = i + 1; j < players.length; j++) {
-        // Game 1: i has White, j has Black
-        let whiteScore1 = getWhiteScore(groupName, i, j);
-        let display1 = whiteScore1 === null ? "○" : (whiteScore1 === 0 ? "0" : (whiteScore1 === 0.5 ? "½" : "1"));
-        
-        // Game 2: j has White, i has Black (i plays Black)
-        let whiteScore2 = getWhiteScore(groupName, j, i);
-        let display2 = whiteScore2 === null ? "○" : (whiteScore2 === 0 ? "0" : (whiteScore2 === 0.5 ? "½" : "1"));
-        
+    let pairings = generateDoubleRoundRobinPairings(players);
+    
+    let html = `<p><b>Total rounds: ${pairings.length}</b> (each player plays once per round, colors alternate across two cycles)</p>`;
+    
+    for (let r = 0; r < pairings.length; r++) {
+      html += `<div style="margin-bottom: 20px; border:1px solid #ccc; padding:10px; background:#f9f9f9;">`;
+      html += `<h4>Round ${r + 1}</h4>`;
+      html += `<table border="1" cellpadding="5" cellspacing="0" style="border-collapse:collapse">`;
+      html += `<tr><th>White</th><th>Black</th><th>Result (White's score)</th></tr>`;
+      
+      for (let m of pairings[r]) {
+        let whiteScore = getWhite(group, m.whiteIdx, m.blackIdx);
+        let display = whiteScore === null ? "○" : (whiteScore === 0 ? "0" : (whiteScore === 0.5 ? "½" : "1"));
         html += `<tr>
-          <td>${matchId+1}</td>
-          <td><b>${escapeHtml(players[i])}</b> (White) vs <b>${escapeHtml(players[j])}</b> (Black)</td>
-          <td><b>${escapeHtml(players[j])}</b> (White) vs <b>${escapeHtml(players[i])}</b> (Black)</td>
-          <td><button onclick="cycleWhite('${groupName}', ${i}, ${j})">${display1}</button></td>
-          <td><button onclick="cycleWhite('${groupName}', ${j}, ${i})">${display2}</button></td>
+          <td>${escapeHtml(m.white)}</td>
+          <td>${escapeHtml(m.black)}</td>
+          <td><button onclick="cycleWhiteResult('${group}', ${m.whiteIdx}, ${m.blackIdx})">${display}</button></td>
         </tr>`;
-        matchId++;
       }
+      html += `</table></div>`;
     }
-    html += "</table>";
     
-    // also add standings
-    let stats = getStandings(groupName, players);
-    html += "<br><h4>Standings</h4>";
-    html += "<table border='1' cellpadding='3' cellspacing='0' style='border-collapse:collapse'>";
-    html += "<tr><th>Rank</th><th>Player</th><th>W</th><th>D</th><th>L</th><th>Total</th></tr>";
+    // standings
+    let stats = getStandings(group, players);
+    html += `<h4>Standings</h4>`;
+    html += `<table border="1" cellpadding="3" cellspacing="0" style="border-collapse:collapse">`;
+    html += `<tr><th>Rank</th><th>Player</th><th>W</th><th>D</th><th>L</th><th>Total</th></tr>`;
     for (let s = 0; s < stats.length; s++) {
-      html += `<tr><td>${s+1}</td><td>${escapeHtml(stats[s].name)}</td><td>${stats[s].wins}</td><td>${stats[s].draws}</td><td>${stats[s].losses}</td><td>${stats[s].points.toFixed(1)}</td></tr>`;
+      html += `<tr>
+        <td>${s+1}</td>
+        <td>${escapeHtml(stats[s].name)}</td>
+        <td>${stats[s].wins}</td>
+        <td>${stats[s].draws}</td>
+        <td>${stats[s].losses}</td>
+        <td><b>${stats[s].points.toFixed(1)}</b></td>
+      </tr>`;
     }
-    html += "</table>";
+    html += `</table>`;
     
     container.innerHTML = html;
   }
 
-  // ========== CYCLE WHITE RESULT ==========
-  window.cycleWhite = function(groupName, i, j) {
-    let current = getWhiteScore(groupName, i, j);
+  window.cycleWhiteResult = function(group, whiteIdx, blackIdx) {
+    let current = getWhite(group, whiteIdx, blackIdx);
     let next = cycleScore(current);
-    setWhiteScore(groupName, i, j, next);
+    setWhite(group, whiteIdx, blackIdx, next);
     renderAll();
   };
 
-  // ========== ADD / REMOVE PLAYERS ==========
+  function renderAll() {
+    renderPlayersList("menPlayers", men, "men");
+    renderPlayersList("womenPlayers", women, "women");
+    renderPairings("menPairings", "men", men);
+    renderPairings("womenPairings", "women", women);
+  }
+
+  // ========== ADD/REMOVE ==========
   window.addMen = function() {
     let input = document.getElementById("newMenName");
     let name = input.value.trim();
     if (name && !men.some(p => p.toLowerCase() === name.toLowerCase())) {
       men.push(name);
-      reinitAllScores();
-      input.value = "";
+      menWhite = initWhiteArray(men);
       renderAll();
-    } else if (name) {
-      alert("Duplicate name");
-    }
+      input.value = "";
+    } else if (name) alert("Duplicate");
   };
-
+  
   window.addWomen = function() {
     let input = document.getElementById("newWomenName");
     let name = input.value.trim();
     if (name && !women.some(p => p.toLowerCase() === name.toLowerCase())) {
       women.push(name);
-      reinitAllScores();
-      input.value = "";
+      womenWhite = initWhiteArray(women);
       renderAll();
-    } else if (name) {
-      alert("Duplicate name");
-    }
+      input.value = "";
+    } else if (name) alert("Duplicate");
   };
-
-  window.removePlayer = function(groupName, idx) {
-    if (groupName === "men") {
-      men.splice(idx, 1);
-    } else {
-      women.splice(idx, 1);
-    }
-    reinitAllScores();
+  
+  window.removeLastMen = function() {
+    if (men.length > 0) men.pop();
+    menWhite = initWhiteArray(men);
     renderAll();
   };
-
+  
+  window.removeLastWomen = function() {
+    if (women.length > 0) women.pop();
+    womenWhite = initWhiteArray(women);
+    renderAll();
+  };
+  
   window.resetAllScores = function() {
-    reinitAllScores();
+    menWhite = initWhiteArray(men);
+    womenWhite = initWhiteArray(women);
     renderAll();
   };
 
-  function renderAll() {
-    renderPlayersList("menPlayers", men, "men", addMen);
-    renderPlayersList("womenPlayers", women, "women", addWomen);
-    renderPairings("menPairings", "men", men);
-    renderPairings("womenPairings", "women", women);
-  }
-
-  // initial render
   renderAll();
 </script>
 
