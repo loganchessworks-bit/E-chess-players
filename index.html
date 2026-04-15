@@ -2,659 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Double Round Robin Chess | 2 Games per Pair</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #1a3c2a 0%, #0e2a1a 100%);
-      margin: 0;
-      padding: 20px;
-      min-height: 100vh;
-    }
-
-    .container {
-      max-width: 1800px;
-      margin: 0 auto;
-    }
-
-    .main-header {
-      background: #2d2e2c;
-      border-radius: 40px 40px 0 0;
-      padding: 1rem 2rem;
-      text-align: center;
-      border-bottom: 4px solid #d4af37;
-    }
-
-    .main-header h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      color: #f7e8c8;
-      letter-spacing: 1px;
-    }
-
-    .groups-wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-
-    .group-panel {
-      flex: 1;
-      min-width: 650px;
-      background: #fefcf5;
-      border-radius: 32px;
-      overflow: hidden;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
-      border: 1px solid #e0d5bb;
-    }
-
-    .group-header {
-      background: #e9dbc0;
-      padding: 0.8rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      border-bottom: 2px solid #c5a759;
-    }
-
-    .group-header h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .group-header h2 span {
-      background: #2d2e2c;
-      color: #fad974;
-      padding: 2px 10px;
-      border-radius: 40px;
-      font-size: 0.8rem;
-    }
-
-    .add-form {
-      display: flex;
-      gap: 6px;
-    }
-
-    .add-form input {
-      padding: 6px 12px;
-      border-radius: 30px;
-      border: 1px solid #c5a759;
-      background: white;
-      font-size: 0.8rem;
-      width: 160px;
-    }
-
-    .add-form button {
-      background: #2d3e2a;
-      border: none;
-      color: white;
-      padding: 6px 14px;
-      border-radius: 30px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 0.75rem;
-    }
-
-    .add-form button:hover {
-      background: #4e6b3e;
-    }
-
-    .players-area {
-      padding: 0.8rem 1.5rem;
-      background: #fefcf5;
-      border-bottom: 1px solid #e9debf;
-    }
-
-    .players-label {
-      font-size: 0.7rem;
-      font-weight: bold;
-      color: #7a5c3a;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-
-    .player-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .player-tag {
-      background: #f3ecd9;
-      padding: 4px 8px 4px 12px;
-      border-radius: 40px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-left: 3px solid #d4af37;
-    }
-
-    .remove-btn {
-      background: #b87c4f;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      font-size: 12px;
-      cursor: pointer;
-      font-weight: bold;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .remove-btn:hover {
-      background: #a0342a;
-    }
-
-    .standings-area {
-      padding: 0 1.5rem 0.8rem 1.5rem;
-    }
-
-    .standings-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-      background: white;
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .standings-table th {
-      background: #d9cbab;
-      padding: 6px 5px;
-      text-align: left;
-    }
-
-    .standings-table td {
-      padding: 6px 5px;
-      border-bottom: 1px solid #ede3cd;
-    }
-
-    .matrix-area {
-      padding: 0 1.5rem 1.5rem 1.5rem;
-      overflow-x: auto;
-    }
-
-    .rr-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.7rem;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .rr-table th, .rr-table td {
-      border: 1px solid #dacdac;
-      padding: 4px 2px;
-      text-align: center;
-      vertical-align: middle;
-    }
-
-    .rr-table th {
-      background: #e2d6b6;
-      font-weight: 700;
-    }
-
-    .player-col {
-      background: #f3ecd9;
-      font-weight: bold;
-      text-align: left;
-      padding-left: 8px;
-    }
-
-    .game-group {
-      display: flex;
-      gap: 4px;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .game-circle {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 0.85rem;
-      transition: 0.05s linear;
-      background-color: #f5f0e0;
-      border: 1px solid #c5b58a;
-    }
-
-    .game-circle.white {
-      background-color: #ffffff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .game-circle.black {
-      background-color: #3a3a3a;
-      color: #f0f0f0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-
-    .game-circle.white:hover {
-      background-color: #ffe8b5;
-      transform: scale(1.05);
-    }
-
-    .game-circle.black:hover {
-      background-color: #5a5a5a;
-      transform: scale(1.05);
-    }
-
-    .empty-cell {
-      background-color: #ece3d0;
-    }
-
-    .footer {
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: flex-end;
-      gap: 15px;
-      background: #fefcf5;
-      border-top: 1px solid #e9dfc7;
-      border-radius: 0 0 32px 32px;
-    }
-
-    button {
-      background: #2d3e2a;
-      border: none;
-      color: white;
-      padding: 6px 20px;
-      border-radius: 30px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    button:hover {
-      background: #4e6b3e;
-    }
-
-    .reset-btn {
-      background: #8b6946;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Double Round Robin Chess</title>
 </head>
 <body>
-<div class="container">
-  <div class="main-header">
-    <h1>♞ DOUBLE ROUND ROBIN CHESS ♜</h1>
-  </div>
 
-  <div class="groups-wrapper">
-    <!-- MEN PANEL -->
-    <div class="group-panel" id="menPanel">
-      <div class="group-header">
-        <h2>🚹 MEN <span id="menCount">0</span></h2>
-        <div class="add-form">
-          <input type="text" id="newMenName" placeholder="Player name" maxlength="30">
-          <button id="addMenBtn">+ Add</button>
-        </div>
-      </div>
-      <div class="players-area">
-        <div class="players-label">Participants</div>
-        <div class="player-tags" id="menPlayersList"></div>
-      </div>
-      <div class="standings-area">
-        <table class="standings-table">
-          <thead><tr><th>#</th><th>Player</th><th>W</th><th>D</th><th>L</th><th>Total</th></tr></thead>
-          <tbody id="menStandingsBody"></tbody>
-        </table>
-      </div>
-      <div class="matrix-area">
-        <div id="menMatrix"></div>
-      </div>
-    </div>
+<h2>MEN</h2>
+<div id="menPlayers"></div>
+<button onclick="addMen()">+ Add Men</button>
+<input type="text" id="newMenName" placeholder="Player name">
+<br><br>
 
-    <!-- WOMEN PANEL -->
-    <div class="group-panel" id="womenPanel">
-      <div class="group-header">
-        <h2>🚺 WOMEN <span id="womenCount">0</span></h2>
-        <div class="add-form">
-          <input type="text" id="newWomenName" placeholder="Player name" maxlength="30">
-          <button id="addWomenBtn">+ Add</button>
-        </div>
-      </div>
-      <div class="players-area">
-        <div class="players-label">Participants</div>
-        <div class="player-tags" id="womenPlayersList"></div>
-      </div>
-      <div class="standings-area">
-        <table class="standings-table">
-          <thead><tr><th>#</th><th>Player</th><th>W</th><th>D</th><th>L</th><th>Total</th></tr></thead>
-          <tbody id="womenStandingsBody"></tbody>
-        </table>
-      </div>
-      <div class="matrix-area">
-        <div id="womenMatrix"></div>
-      </div>
-    </div>
-  </div>
+<h2>WOMEN</h2>
+<div id="womenPlayers"></div>
+<button onclick="addWomen()">+ Add Women</button>
+<input type="text" id="newWomenName" placeholder="Player name">
+<br><br>
 
-  <div class="footer">
-    <button id="resetAllBtn" class="reset-btn">Reset All Scores</button>
-  </div>
-</div>
+<hr>
+
+<h2>PAIRINGS & SCORES</h2>
+
+<h3>MEN</h3>
+<div id="menPairings"></div>
+
+<h3>WOMEN</h3>
+<div id="womenPairings"></div>
+
+<hr>
+<button onclick="resetAllScores()">Reset All Scores</button>
 
 <script>
-  // Double Round Robin Group Class
-  class DoubleRoundRobinGroup {
-    constructor(players) {
-      this.players = [...players];
-      this.n = this.players.length;
-      // white[i][j] = result when i plays WHITE vs j (0=loss, 0.5=draw, 1=win, null=unplayed)
-      // black[i][j] = result when i plays BLACK vs j (0=loss, 0.5=draw, 1=win, null=unplayed)
-      this.white = [];
-      this.black = [];
-      this.initScores();
-    }
-
-    initScores() {
-      this.n = this.players.length;
-      this.white = Array(this.n).fill().map(() => Array(this.n).fill(null));
-      this.black = Array(this.n).fill().map(() => Array(this.n).fill(null));
-      for (let i = 0; i < this.n; i++) {
-        for (let j = 0; j < this.n; j++) {
-          if (i !== j) {
-            this.white[i][j] = null;
-            this.black[i][j] = null;
-          }
-        }
-      }
-    }
-
-    resetScores() {
-      this.initScores();
-    }
-
-    setWhiteResult(i, j, score) {
-      if (i === j) return;
-      if (score !== 0 && score !== 0.5 && score !== 1 && score !== null) return;
-      this.white[i][j] = score;
-    }
-
-    getWhiteResult(i, j) {
-      if (i === j) return null;
-      return this.white[i][j];
-    }
-
-    setBlackResult(i, j, score) {
-      if (i === j) return;
-      if (score !== 0 && score !== 0.5 && score !== 1 && score !== null) return;
-      this.black[i][j] = score;
-    }
-
-    getBlackResult(i, j) {
-      if (i === j) return null;
-      return this.black[i][j];
-    }
-
-    getStats() {
-      const stats = [];
-      for (let i = 0; i < this.n; i++) {
-        let totalPoints = 0;
-        let wins = 0;
-        let draws = 0;
-        let losses = 0;
-        for (let j = 0; j < this.n; j++) {
-          if (i === j) continue;
-          
-          const white = this.getWhiteResult(i, j);
-          const black = this.getBlackResult(i, j);
-          
-          if (white !== null) {
-            totalPoints += white;
-            if (white === 1) wins++;
-            else if (white === 0.5) draws++;
-            else if (white === 0) losses++;
-          }
-          if (black !== null) {
-            totalPoints += black;
-            if (black === 1) wins++;
-            else if (black === 0.5) draws++;
-            else if (black === 0) losses++;
-          }
-        }
-        stats.push({
-          name: this.players[i],
-          points: totalPoints,
-          wins: wins,
-          draws: draws,
-          losses: losses
-        });
-      }
-      stats.sort((a, b) => {
-        if (a.points !== b.points) return b.points - a.points;
-        return b.wins - a.wins;
-      });
-      return stats;
-    }
-
-    addPlayer(name) {
-      if (!name.trim()) return false;
-      if (this.players.some(p => p.toLowerCase() === name.trim().toLowerCase())) return false;
-      this.players.push(name.trim());
-      this.initScores();
-      return true;
-    }
-
-    removePlayer(idx) {
-      if (idx < 0 || idx >= this.players.length) return false;
-      this.players.splice(idx, 1);
-      this.initScores();
-      return true;
-    }
-  }
-
-  // Initial default players
-  const defaultMen = [
-    "NIRISH KUMAR", "RISHIKESH KUMAR", "AMIRTHEN",
-    "DAMIEN STEVE JOHNSON", "AHMAD NAUFAL", "MUHAMMAD IRSYAD"
-  ];
-  const defaultWomen = [
-    "LYANNE KONG JING THUNG", "MATHIVATHANE", "HOVIYEAMATHY",
-    "TAVAMATHIE", "NURUL SHAFIKAH", "LINGGESWARY"
+  // ========== DATA ==========
+  let men = [
+    "NIRISH KUMAR",
+    "RISHIKESH KUMAR",
+    "AMIRTHEN",
+    "DAMIEN STEVE JOHNSON",
+    "AHMAD NAUFAL",
+    "MUHAMMAD IRSYAD"
   ];
 
-  let menGroup = new DoubleRoundRobinGroup(defaultMen);
-  let womenGroup = new DoubleRoundRobinGroup(defaultWomen);
+  let women = [
+    "LYANNE KONG JING THUNG",
+    "MATHIVATHANE",
+    "HOVIYEAMATHY",
+    "TAVAMATHIE",
+    "NURUL SHAFIKAH",
+    "LINGGESWARY"
+  ];
 
-  function renderPlayersList(group, containerId, gender) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const players = group.players;
-    container.innerHTML = '';
-    players.forEach((name, idx) => {
-      const tag = document.createElement('div');
-      tag.className = 'player-tag';
-      tag.innerHTML = `${escapeHtml(name)} <button class="remove-btn" data-group="${gender}" data-idx="${idx}">✕</button>`;
-      container.appendChild(tag);
-    });
+  // scores: { "groupName": { "i,j": { white: score, black: score } } }
+  // score: 0=loss, 0.5=draw, 1=win, null=not played
+  let scores = {
+    men: {},
+    women: {}
+  };
 
-    document.querySelectorAll(`.remove-btn[data-group="${gender}"]`).forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const idx = parseInt(btn.getAttribute('data-idx'));
-        if (gender === 'men') {
-          menGroup.removePlayer(idx);
-          renderAll();
-        } else {
-          womenGroup.removePlayer(idx);
-          renderAll();
-        }
-      });
-    });
-  }
-
-  function renderStandings(group, tbodyId) {
-    const tbody = document.getElementById(tbodyId);
-    if (!tbody) return;
-    const stats = group.getStats();
-    tbody.innerHTML = '';
-    stats.forEach((stat, idx) => {
-      const row = tbody.insertRow();
-      row.insertCell(0).textContent = (idx + 1).toString();
-      row.insertCell(1).textContent = stat.name;
-      row.insertCell(2).textContent = stat.wins;
-      row.insertCell(3).textContent = stat.draws;
-      row.insertCell(4).textContent = stat.losses;
-      row.insertCell(5).textContent = stat.points.toFixed(1);
-      row.cells[5].style.fontWeight = 'bold';
-      row.cells[5].style.backgroundColor = '#f9f2e0';
-    });
-  }
-
-  // Render matrix with TWO circles per matchup: White (left) and Black (right)
-  function renderMatrix(group, containerId, gender) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const n = group.players.length;
-    const players = group.players;
-
-    if (n === 0) {
-      container.innerHTML = '<div style="padding: 20px; text-align: center; color: #7a6848;">Add players to see match matrix</div>';
-      return;
-    }
-
-    const table = document.createElement('table');
-    table.className = 'rr-table';
-
-    const thead = document.createElement('thead');
-    const headerRow = thead.insertRow();
-    const emptyTh = document.createElement('th');
-    emptyTh.textContent = 'vs →';
-    headerRow.appendChild(emptyTh);
-    for (let i = 0; i < n; i++) {
-      const th = document.createElement('th');
-      let short = players[i].length > 10 ? players[i].substring(0, 8) + '..' : players[i];
-      th.textContent = short;
-      th.title = players[i];
-      headerRow.appendChild(th);
-    }
-    table.appendChild(thead);
-
-    const tbody = document.createElement('tbody');
-    for (let i = 0; i < n; i++) {
-      const row = tbody.insertRow();
-      const nameCell = row.insertCell(0);
-      let short = players[i].length > 10 ? players[i].substring(0, 8) + '..' : players[i];
-      nameCell.textContent = short;
-      nameCell.className = 'player-col';
-      nameCell.title = players[i];
-
-      for (let j = 0; j < n; j++) {
-        const cell = row.insertCell();
-        if (i === j) {
-          cell.textContent = '—';
-          cell.className = 'empty-cell';
-          cell.style.backgroundColor = '#ece3d0';
-        } else {
-          // Two circles: White game (i has White vs j) and Black game (i has Black vs j)
-          const whiteVal = group.getWhiteResult(i, j);
-          const blackVal = group.getBlackResult(i, j);
-          
-          const whiteDisplay = (whiteVal === 0 ? '0' : (whiteVal === 0.5 ? '½' : (whiteVal === 1 ? '1' : '○')));
-          const blackDisplay = (blackVal === 0 ? '0' : (blackVal === 0.5 ? '½' : (blackVal === 1 ? '1' : '●')));
-          
-          const gameGroup = document.createElement('div');
-          gameGroup.className = 'game-group';
-          
-          const whiteCircle = document.createElement('div');
-          whiteCircle.className = 'game-circle white';
-          whiteCircle.textContent = whiteDisplay;
-          whiteCircle.title = `${players[i]} (White) vs ${players[j]}`;
-          
-          const blackCircle = document.createElement('div');
-          blackCircle.className = 'game-circle black';
-          blackCircle.textContent = blackDisplay;
-          blackCircle.title = `${players[i]} (Black) vs ${players[j]}`;
-          
-          whiteCircle.onclick = (function(iIdx, jIdx, gen) {
-            return function(e) {
-              e.stopPropagation();
-              handleWhiteClick(iIdx, jIdx, gen);
-            };
-          })(i, j, gender);
-          
-          blackCircle.onclick = (function(iIdx, jIdx, gen) {
-            return function(e) {
-              e.stopPropagation();
-              handleBlackClick(iIdx, jIdx, gen);
-            };
-          })(i, j, gender);
-          
-          gameGroup.appendChild(whiteCircle);
-          gameGroup.appendChild(blackCircle);
-          cell.appendChild(gameGroup);
-          cell.style.padding = '4px 2px';
-        }
+  function initScoresForGroup(group, players) {
+    let groupScores = {};
+    for (let i = 0; i < players.length; i++) {
+      for (let j = i + 1; j < players.length; j++) {
+        let key = i + "," + j;
+        groupScores[key] = { white: null, black: null };
       }
     }
-    table.appendChild(tbody);
-    container.innerHTML = '';
-    container.appendChild(table);
+    scores[group] = groupScores;
   }
 
-  function handleWhiteClick(i, j, gender) {
-    const group = gender === 'men' ? menGroup : womenGroup;
-    let current = group.getWhiteResult(i, j);
-    let newScore;
-    if (current === null) newScore = 0;
-    else if (current === 0) newScore = 0.5;
-    else if (current === 0.5) newScore = 1;
-    else newScore = null;
-    group.setWhiteResult(i, j, newScore);
-    renderAll();
+  function reinitAllScores() {
+    initScoresForGroup("men", men);
+    initScoresForGroup("women", women);
   }
 
-  function handleBlackClick(i, j, gender) {
-    const group = gender === 'men' ? menGroup : womenGroup;
-    let current = group.getBlackResult(i, j);
-    let newScore;
-    if (current === null) newScore = 0;
-    else if (current === 0) newScore = 0.5;
-    else if (current === 0.5) newScore = 1;
-    else newScore = null;
-    group.setBlackResult(i, j, newScore);
-    renderAll();
-  }
+  // initial
+  reinitAllScores();
 
-  function updateGroupCounters() {
-    document.getElementById('menCount').textContent = menGroup.players.length;
-    document.getElementById('womenCount').textContent = womenGroup.players.length;
-  }
-
-  function renderAll() {
-    renderPlayersList(menGroup, 'menPlayersList', 'men');
-    renderStandings(menGroup, 'menStandingsBody');
-    renderMatrix(menGroup, 'menMatrix', 'men');
-    
-    renderPlayersList(womenGroup, 'womenPlayersList', 'women');
-    renderStandings(womenGroup, 'womenStandingsBody');
-    renderMatrix(womenGroup, 'womenMatrix', 'women');
-    
-    updateGroupCounters();
-  }
-
+  // ========== HELPERS ==========
   function escapeHtml(str) {
     return str.replace(/[&<>]/g, function(m) {
       if (m === '&') return '&amp;';
@@ -664,50 +88,205 @@
     });
   }
 
-  function addMenPlayer() {
-    const input = document.getElementById('newMenName');
-    const name = input.value.trim();
-    if (name) {
-      if (menGroup.addPlayer(name)) {
-        input.value = '';
-        renderAll();
-      } else {
-        alert('Duplicate or invalid name');
-      }
-    }
+  // get white score for i vs j (i plays white vs j)
+  function getWhiteScore(group, i, j) {
+    if (i === j) return null;
+    let a = Math.min(i, j);
+    let b = Math.max(i, j);
+    let key = a + "," + b;
+    let pair = scores[group][key];
+    if (!pair) return null;
+    if (i < j) return pair.white;
+    else return pair.black;
   }
 
-  function addWomenPlayer() {
-    const input = document.getElementById('newWomenName');
-    const name = input.value.trim();
-    if (name) {
-      if (womenGroup.addPlayer(name)) {
-        input.value = '';
-        renderAll();
-      } else {
-        alert('Duplicate or invalid name');
-      }
-    }
+  // set white score for i vs j (i plays white vs j)
+  function setWhiteScore(group, i, j, value) {
+    if (i === j) return;
+    let a = Math.min(i, j);
+    let b = Math.max(i, j);
+    let key = a + "," + b;
+    if (!scores[group][key]) scores[group][key] = { white: null, black: null };
+    if (i < j) scores[group][key].white = value;
+    else scores[group][key].black = value;
   }
 
-  function resetAllScores() {
-    menGroup.resetScores();
-    womenGroup.resetScores();
+  // get black score for i vs j (i plays black vs j) = 1 - white score of j vs i
+  function getBlackScore(group, i, j) {
+    if (i === j) return null;
+    let whiteOfJ = getWhiteScore(group, j, i);
+    return whiteOfJ === null ? null : 1 - whiteOfJ;
+  }
+
+  // set black score directly (for cycling)
+  function setBlackScore(group, i, j, value) {
+    if (i === j) return;
+    // black score for i vs j = white score for j vs i should be 1 - value
+    let newWhiteForJ = value === null ? null : 1 - value;
+    setWhiteScore(group, j, i, newWhiteForJ);
+  }
+
+  // cycle score: null -> 0 -> 0.5 -> 1 -> null
+  function cycleScore(current) {
+    if (current === null) return 0;
+    if (current === 0) return 0.5;
+    if (current === 0.5) return 1;
+    return null;
+  }
+
+  // ========== STANDINGS ==========
+  function getStandings(group, players) {
+    let stats = [];
+    for (let i = 0; i < players.length; i++) {
+      let total = 0;
+      let wins = 0;
+      let draws = 0;
+      let losses = 0;
+      for (let j = 0; j < players.length; j++) {
+        if (i === j) continue;
+        let white = getWhiteScore(group, i, j);
+        let black = getBlackScore(group, i, j);
+        if (white !== null) {
+          total += white;
+          if (white === 1) wins++;
+          else if (white === 0.5) draws++;
+          else losses++;
+        }
+        if (black !== null) {
+          total += black;
+          if (black === 1) wins++;
+          else if (black === 0.5) draws++;
+          else losses++;
+        }
+      }
+      stats.push({ name: players[i], points: total, wins: wins, draws: draws, losses: losses });
+    }
+    stats.sort((a, b) => {
+      if (a.points !== b.points) return b.points - a.points;
+      return b.wins - a.wins;
+    });
+    return stats;
+  }
+
+  // ========== RENDER PLAYERS LIST ==========
+  function renderPlayersList(containerId, players, groupName, addCallback) {
+    let container = document.getElementById(containerId);
+    if (!container) return;
+    let html = "";
+    for (let i = 0; i < players.length; i++) {
+      html += `<span style="display:inline-block; border:1px solid #ccc; padding:4px 8px; margin:4px; border-radius:20px;">${escapeHtml(players[i])} <button onclick="removePlayer('${groupName}', ${i})">x</button></span>`;
+    }
+    container.innerHTML = html;
+  }
+
+  // ========== RENDER PAIRINGS (all matches with two games) ==========
+  function renderPairings(containerId, groupName, players) {
+    let container = document.getElementById(containerId);
+    if (!container) return;
+    if (players.length < 2) {
+      container.innerHTML = "<i>Need at least 2 players</i>";
+      return;
+    }
+
+    let html = "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse:collapse'>";
+    html += "<tr><th>#</th><th>White Player</th><th>Black Player</th><th>Result (White)</th><th>Result (Black)</th></tr>";
+    
+    let matchId = 0;
+    for (let i = 0; i < players.length; i++) {
+      for (let j = i + 1; j < players.length; j++) {
+        // Game 1: i has White, j has Black
+        let whiteScore1 = getWhiteScore(groupName, i, j);
+        let display1 = whiteScore1 === null ? "○" : (whiteScore1 === 0 ? "0" : (whiteScore1 === 0.5 ? "½" : "1"));
+        
+        // Game 2: j has White, i has Black (i plays Black)
+        let whiteScore2 = getWhiteScore(groupName, j, i);
+        let display2 = whiteScore2 === null ? "○" : (whiteScore2 === 0 ? "0" : (whiteScore2 === 0.5 ? "½" : "1"));
+        
+        html += `<tr>
+          <td>${matchId+1}</td>
+          <td><b>${escapeHtml(players[i])}</b> (White) vs <b>${escapeHtml(players[j])}</b> (Black)</td>
+          <td><b>${escapeHtml(players[j])}</b> (White) vs <b>${escapeHtml(players[i])}</b> (Black)</td>
+          <td><button onclick="cycleWhite('${groupName}', ${i}, ${j})">${display1}</button></td>
+          <td><button onclick="cycleWhite('${groupName}', ${j}, ${i})">${display2}</button></td>
+        </tr>`;
+        matchId++;
+      }
+    }
+    html += "</table>";
+    
+    // also add standings
+    let stats = getStandings(groupName, players);
+    html += "<br><h4>Standings</h4>";
+    html += "<table border='1' cellpadding='3' cellspacing='0' style='border-collapse:collapse'>";
+    html += "<tr><th>Rank</th><th>Player</th><th>W</th><th>D</th><th>L</th><th>Total</th></tr>";
+    for (let s = 0; s < stats.length; s++) {
+      html += `<tr><td>${s+1}</td><td>${escapeHtml(stats[s].name)}</td><td>${stats[s].wins}</td><td>${stats[s].draws}</td><td>${stats[s].losses}</td><td>${stats[s].points.toFixed(1)}</td></tr>`;
+    }
+    html += "</table>";
+    
+    container.innerHTML = html;
+  }
+
+  // ========== CYCLE WHITE RESULT ==========
+  window.cycleWhite = function(groupName, i, j) {
+    let current = getWhiteScore(groupName, i, j);
+    let next = cycleScore(current);
+    setWhiteScore(groupName, i, j, next);
     renderAll();
+  };
+
+  // ========== ADD / REMOVE PLAYERS ==========
+  window.addMen = function() {
+    let input = document.getElementById("newMenName");
+    let name = input.value.trim();
+    if (name && !men.some(p => p.toLowerCase() === name.toLowerCase())) {
+      men.push(name);
+      reinitAllScores();
+      input.value = "";
+      renderAll();
+    } else if (name) {
+      alert("Duplicate name");
+    }
+  };
+
+  window.addWomen = function() {
+    let input = document.getElementById("newWomenName");
+    let name = input.value.trim();
+    if (name && !women.some(p => p.toLowerCase() === name.toLowerCase())) {
+      women.push(name);
+      reinitAllScores();
+      input.value = "";
+      renderAll();
+    } else if (name) {
+      alert("Duplicate name");
+    }
+  };
+
+  window.removePlayer = function(groupName, idx) {
+    if (groupName === "men") {
+      men.splice(idx, 1);
+    } else {
+      women.splice(idx, 1);
+    }
+    reinitAllScores();
+    renderAll();
+  };
+
+  window.resetAllScores = function() {
+    reinitAllScores();
+    renderAll();
+  };
+
+  function renderAll() {
+    renderPlayersList("menPlayers", men, "men", addMen);
+    renderPlayersList("womenPlayers", women, "women", addWomen);
+    renderPairings("menPairings", "men", men);
+    renderPairings("womenPairings", "women", women);
   }
 
-  document.getElementById('addMenBtn').addEventListener('click', addMenPlayer);
-  document.getElementById('addWomenBtn').addEventListener('click', addWomenPlayer);
-  document.getElementById('resetAllBtn').addEventListener('click', resetAllScores);
-  
-  document.getElementById('newMenName').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') addMenPlayer();
-  });
-  document.getElementById('newWomenName').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') addWomenPlayer();
-  });
-
+  // initial render
   renderAll();
 </script>
+
 </body>
 </html>
