@@ -171,10 +171,10 @@
       padding: 4px 14px;
       cursor: pointer;
       font-weight: bold;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-family: monospace;
       transition: 0.05s linear;
-      min-width: 55px;
+      min-width: 70px;
     }
     .score-btn:hover {
       background: #ffe0aa;
@@ -294,7 +294,8 @@
     "LINGGESWARY"
   ];
 
-  // Scores: white[i][j] = result when i has white vs j (null, 0, 0.5, 1)
+  // Scores: white[i][j] = result when i has white vs j
+  // Values: null = not played, 0 = loss, 0.5 = draw, 1 = win
   let menScores = [];
   let womenScores = [];
 
@@ -330,22 +331,39 @@
     scores[i][j] = val;
   }
 
-  function cycleScore(current) {
-    if (current === null) return 0;
-    if (current === 0) return 0.5;
-    if (current === 0.5) return 1;
+  // Convert numeric score to chess notation
+  function scoreToNotation(score) {
+    if (score === null) return "?";
+    if (score === 1) return "1-0";
+    if (score === 0.5) return "½-½";
+    if (score === 0) return "0-1";
+    return "?";
+  }
+
+  // Convert chess notation back to numeric score
+  function notationToScore(notation) {
+    if (notation === "1-0") return 1;
+    if (notation === "½-½") return 0.5;
+    if (notation === "0-1") return 0;
     return null;
   }
 
+  // Cycle through: ? -> 1-0 -> ½-½ -> 0-1 -> ?
+  function cycleNotation(currentNotation) {
+    if (currentNotation === "?") return "1-0";
+    if (currentNotation === "1-0") return "½-½";
+    if (currentNotation === "½-½") return "0-1";
+    return "?";
+  }
+
   // ========== PROPER DOUBLE ROUND ROBIN PAIRINGS ==========
-  // Standard circle method for round robin
   function generateSingleRoundRobin(players) {
     let n = players.length;
     if (n < 2) return [];
     
     let isOdd = n % 2 === 1;
     let virtualPlayers = [...players];
-    if (isOdd) virtualPlayers.push(null); // BYE
+    if (isOdd) virtualPlayers.push(null);
     let m = virtualPlayers.length;
     
     let rounds = [];
@@ -371,15 +389,12 @@
       }
       rounds.push(matches);
       
-      // rotate: keep first fixed, rotate rest
       let last = virtualPlayers.pop();
       virtualPlayers.splice(1, 0, last);
     }
     return rounds;
   }
 
-  // Double round robin: first cycle, then second cycle with colors swapped
-  // Round 1 and Round (N+1) are same matchups with swapped colors
   function generateDoubleRoundRobin(players) {
     if (players.length < 2) return [];
     
@@ -388,7 +403,6 @@
     
     let secondCycle = generateSingleRoundRobin(players);
     
-    // swap colors in second cycle
     for (let r = 0; r < secondCycle.length; r++) {
       for (let m of secondCycle[r]) {
         let temp = m.white;
@@ -400,8 +414,6 @@
       }
     }
     
-    // Combine: all first cycle rounds first, then all second cycle rounds
-    // This makes Round 1 and Round (N+1) have same matchups with swapped colors
     return [...firstCycle, ...secondCycle];
   }
 
@@ -465,14 +477,14 @@
         <table class="matches-table">`;
       
       for (let m of rounds[r]) {
-        let whiteScore = getWhiteScore(scores, m.whiteIdx, m.blackIdx);
-        let display = whiteScore === null ? "○" : (whiteScore === 0 ? "0" : (whiteScore === 0.5 ? "½" : "1"));
+        let whiteScoreNum = getWhiteScore(scores, m.whiteIdx, m.blackIdx);
+        let display = scoreToNotation(whiteScoreNum);
         
         html += `<tr>
-          <td style="width:40%"><span class="white-player">${escapeHtml(m.white)}</span> <span class="vs">(white)</span></td>
-          <td style="width:15%; text-align:center">vs</td>
-          <td style="width:40%"><span class="black-player">${escapeHtml(m.black)}</span> <span class="vs">(black)</span></td>
-          <td style="width:20%; text-align:center">
+          <td style="width:38%"><span class="white-player">${escapeHtml(m.white)}</span> <span class="vs">(white)</span></td>
+          <td style="width:8%; text-align:center">vs</td>
+          <td style="width:38%"><span class="black-player">${escapeHtml(m.black)}</span> <span class="vs">(black)</span></td>
+          <td style="width:16%; text-align:center">
             <button class="score-btn" data-group="${groupName}" data-white="${m.whiteIdx}" data-black="${m.blackIdx}">${display}</button>
           </td>
         </tr>`;
@@ -482,16 +494,17 @@
     html += `</div>`;
     container.innerHTML = html;
     
-    // attach click events
     container.querySelectorAll('.score-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         let group = btn.dataset.group;
         let whiteIdx = parseInt(btn.dataset.white);
         let blackIdx = parseInt(btn.dataset.black);
         let currentScores = group === 'men' ? menScores : womenScores;
-        let current = getWhiteScore(currentScores, whiteIdx, blackIdx);
-        let next = cycleScore(current);
-        setWhiteScore(currentScores, whiteIdx, blackIdx, next);
+        let currentNum = getWhiteScore(currentScores, whiteIdx, blackIdx);
+        let currentNotation = scoreToNotation(currentNum);
+        let nextNotation = cycleNotation(currentNotation);
+        let nextNum = notationToScore(nextNotation);
+        setWhiteScore(currentScores, whiteIdx, blackIdx, nextNum);
         renderAll();
       });
     });
@@ -551,9 +564,7 @@
       return false;
     }
     players.push(name);
-    // rebuild scores
     let newScores = initScoreArray(players);
-    // copy old scores where possible
     for (let i = 0; i < scores.length; i++) {
       for (let j = 0; j < scores.length; j++) {
         if (scores[i] && scores[i][j] !== undefined && scores[i][j] !== null) {
@@ -614,7 +625,6 @@
   });
   document.getElementById('resetAllBtn').addEventListener('click', resetAllScores);
 
-  // Enter key support
   document.getElementById('newMenName').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') document.getElementById('addMenBtn').click();
   });
